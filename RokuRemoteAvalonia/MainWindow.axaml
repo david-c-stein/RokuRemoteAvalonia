@@ -1,0 +1,1036 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:RokuRemoteAvalonia"
+        xmlns:roku="using:RRemote.Roku"
+		xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
+        x:Class="RokuRemoteAvalonia.MainWindow"
+        x:DataType="vm:MainWindow"
+        Title="Roku Remote Control - Avalonia"
+        MinWidth="600" MinHeight="600"
+		Width="650" Height="850">
+
+	<Window.Resources>
+		<!-- Remote Control Gradient Background -->
+		<LinearGradientBrush x:Key="RemoteGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#1E1E28" Offset="0"/>
+			<GradientStop Color="#2B2B35" Offset="0.5"/>
+			<GradientStop Color="#1A1A24" Offset="1"/>
+		</LinearGradientBrush>
+
+		<!-- Button Pressed Effect -->
+		<LinearGradientBrush x:Key="ButtonGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#5A5A64" Offset="0"/>
+			<GradientStop Color="#4A4A54" Offset="0.5"/>
+			<GradientStop Color="#3A3A44" Offset="1"/>
+		</LinearGradientBrush>
+
+		<!-- Purple OK Button Gradient -->
+		<LinearGradientBrush x:Key="OkButtonGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#7A3DB1" Offset="0"/>
+			<GradientStop Color="#662D91" Offset="0.5"/>
+			<GradientStop Color="#541D71" Offset="1"/>
+		</LinearGradientBrush>
+
+		<!-- Quick Launch Button Gradient -->
+		<LinearGradientBrush x:Key="QuickLaunchGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#FF8C42" Offset="0"/>
+			<GradientStop Color="#FF7A2B" Offset="0.5"/>
+			<GradientStop Color="#E5691A" Offset="1"/>
+		</LinearGradientBrush>
+
+		<!-- Top Function Button Gradient -->
+		<LinearGradientBrush x:Key="FunctionButtonGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#4169E1" Offset="0"/>
+			<GradientStop Color="#3457D5" Offset="0.5"/>
+			<GradientStop Color="#2845C9" Offset="1"/>
+		</LinearGradientBrush>
+
+		<!-- Record Mode Gradient -->
+		<LinearGradientBrush x:Key="RecordGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#FF2C2C" Offset="0"/>
+			<GradientStop Color="#E51C1C" Offset="0.5"/>
+			<GradientStop Color="#CC0C0C" Offset="1"/>
+		</LinearGradientBrush>
+
+		<!-- Review Button Gradient -->
+		<LinearGradientBrush x:Key="ReviewGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#4A90E2" Offset="0"/>
+			<GradientStop Color="#357ABD" Offset="0.5"/>
+			<GradientStop Color="#2A5F8F" Offset="1"/>
+		</LinearGradientBrush>
+
+		<!-- Info Button Gradient -->
+		<LinearGradientBrush x:Key="InfoButtonGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#17A2B8" Offset="0"/>
+			<GradientStop Color="#138496" Offset="0.5"/>
+			<GradientStop Color="#0F6674" Offset="1"/>
+		</LinearGradientBrush>
+		
+	</Window.Resources>
+
+	<dialogHostAvalonia:DialogHost Identifier="MainDialogHost"
+									DialogMargin="16"
+									dialogHostAvalonia:DialogHostStyle.CornerRadius="8">	
+	
+	<Grid Margin="20">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<!-- Header Section -->
+		<StackPanel Grid.Row="0" Orientation="Vertical" Spacing="10">
+			<TextBlock Text="Roku Remote Control" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+			<!-- Device Discovery -->
+			<StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+				<Button Content="Discover Devices" Click="OnDiscoverDevices" Padding="10,5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+				<ComboBox Name="DeviceComboBox"
+						  ItemsSource="{Binding DiscoveredDevices}"
+						  SelectedItem="{Binding SelectedDevice}"
+						  MinWidth="250"
+						  PlaceholderText="Select a Roku device">
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="roku:RokuDevice">
+							<TextBlock Text="{Binding model_name}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
+			</StackPanel>
+
+			<!-- Status Bar -->
+			<TextBlock Text="{Binding StatusMessage}"
+					   HorizontalAlignment="Center"
+					   FontStyle="Italic"
+					   Foreground="Gray"/>
+		</StackPanel>
+
+		<!-- Main Content -->
+		<Grid Grid.Row="1" Margin="0,20,0,0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="350"/>
+				<ColumnDefinition Width="20"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+
+			<!-- Roku Remote Panel - Enhanced to look like actual remote -->
+			<Border Grid.Column="0"
+					Background="{StaticResource RemoteGradient}"
+					CornerRadius="15,15,25,25"
+					Padding="20,30,20,40"
+					IsEnabled="{Binding IsConnected}"
+					BorderBrush="#303040"
+					BorderThickness="1"
+					Width="280"
+					Height="620"
+					VerticalAlignment="Top">
+				<Border.Effect>
+					<DropShadowEffect Color="Black" BlurRadius="10" OffsetX="3" OffsetY="3" Opacity="0.4"/>
+				</Border.Effect>
+
+				<StackPanel Spacing="12" HorizontalAlignment="Center">
+
+					<!-- ROKU Logo Area -->
+					<Border Background="#662D91"
+							CornerRadius="12"
+							Padding="15,6"
+							HorizontalAlignment="Center"
+							Margin="0,5,0,10">
+						<TextBlock Text="ROKU"
+								   FontSize="16"
+								   FontWeight="Bold"
+								   HorizontalAlignment="Center"
+								   Foreground="White"
+								   LetterSpacing="1"/>
+					</Border>
+
+					<!-- Recording Status Banner -->
+					<Border Background="{StaticResource RecordGradient}"
+							CornerRadius="8"
+							Padding="10,5"
+							IsVisible="{Binding IsRecording}"
+							HorizontalAlignment="Center"
+							Margin="0,0,0,5">
+						<StackPanel Orientation="Horizontal" Spacing="5">
+							<TextBlock Text="●" FontSize="14" Foreground="White" VerticalAlignment="Center"/>
+							<TextBlock Text="{Binding RecordingStatusText}" 
+									   FontSize="10" 
+									   FontWeight="Bold"
+									   Foreground="White" 
+									   VerticalAlignment="Center"/>
+						</StackPanel>
+					</Border>
+
+					<!-- Top Function Buttons Row -->
+					<StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center" Margin="0,5,0,10">
+						<!-- Search Button -->
+						<Button Content="🔍"
+								Click="OnSearchClick"
+								Width="35"
+								Height="30"
+								FontSize="14"
+								Background="{StaticResource FunctionButtonGradient}"
+								Foreground="White"
+								CornerRadius="8"
+								BorderBrush="#5A7FE1"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Search Apps">
+							<Button.Effect>
+								<DropShadowEffect Color="#4169E1" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
+							</Button.Effect>
+						</Button>
+
+						<!-- Microphone Button -->
+						<Button Content="🎤"
+								Click="OnMicrophoneClick"
+								Width="35"
+								Height="30"
+								FontSize="14"
+								Background="{StaticResource FunctionButtonGradient}"
+								Foreground="White"
+								CornerRadius="8"
+								BorderBrush="#5A7FE1"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Voice Search">
+							<Button.Effect>
+								<DropShadowEffect Color="#4169E1" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
+							</Button.Effect>
+						</Button>
+
+						<!-- Keyboard Button -->
+						<Button Content="{Binding KeyboardButtonText}"
+								Click="OnKeyboardToggle"
+								Width="35"
+								Height="30"
+								FontSize="10"
+								FontWeight="Bold"
+								Background="{StaticResource FunctionButtonGradient}"
+								Foreground="White"
+								CornerRadius="8"
+								BorderBrush="#5A7FE1"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Toggle Keyboard Mode">
+							<Button.Effect>
+								<DropShadowEffect Color="#4169E1" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
+							</Button.Effect>
+						</Button>
+
+						<!-- Info Button -->
+						<Button Content="ℹ️"
+								Click="OnInfoClick"
+								Width="35"
+								Height="30"
+								FontSize="14"
+								Background="{StaticResource InfoButtonGradient}"
+								Foreground="White"
+								CornerRadius="8"
+								BorderBrush="#1FBBD3"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Device Information">
+							<Button.Effect>
+								<DropShadowEffect Color="#17A2B8" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
+							</Button.Effect>
+						</Button>
+
+						<!-- Settings Button -->
+						<Button Content="⚙️"
+								Click="OnSettingsClick"
+								Width="35"
+								Height="30"
+								FontSize="14"
+								Background="{StaticResource FunctionButtonGradient}"
+								Foreground="White"
+								CornerRadius="8"
+								BorderBrush="#5A7FE1"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Settings">
+							<Button.Effect>
+								<DropShadowEffect Color="#4169E1" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
+							</Button.Effect>
+						</Button>
+					</StackPanel>
+
+					<!-- Power Button -->
+					<Button Name="PowerButton"
+							Content="⏻"
+							Click="OnPowerKey"
+							Width="45"
+							Height="45"
+							FontSize="20"
+							Background="#FF4757"
+							Foreground="White"
+							CornerRadius="22"
+							HorizontalAlignment="Center"
+							HorizontalContentAlignment="Center"
+							VerticalContentAlignment="Center"
+							Margin="0,0,0,12"
+							BorderBrush="#FF6B7A"
+							BorderThickness="1">
+						<Button.Effect>
+							<DropShadowEffect Color="#FF4757" BlurRadius="6" OffsetX="0" OffsetY="0" Opacity="0.3"/>
+						</Button.Effect>
+					</Button>
+
+					<!-- Back and Home Row -->
+					<StackPanel Orientation="Horizontal" Spacing="40" HorizontalAlignment="Center" Margin="0,0,0,12">
+						<Button Content="◀"
+								Click="OnBackKey"
+								Width="40"
+								Height="32"
+								FontSize="14"
+								Background="{StaticResource ButtonGradient}"
+								Foreground="White"
+								CornerRadius="6"
+								BorderBrush="#6A6A74"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"/>
+						<Button Content="⌂"
+								Click="OnHomeKey"
+								Width="40"
+								Height="32"
+								FontSize="16"
+								Background="{StaticResource ButtonGradient}"
+								Foreground="White"
+								CornerRadius="6"
+								BorderBrush="#6A6A74"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"/>
+					</StackPanel>
+
+					<!-- D-Pad Navigation -->
+					<Grid Width="140" Height="140" HorizontalAlignment="Center" Margin="0,5,0,8">
+						<!-- D-Pad Background Circle -->
+						<Ellipse Fill="#3A3A44" 
+								 Stroke="#2A2A34"
+								 StrokeThickness="1"
+								 Width="140" Height="140"/>
+						
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="*"/>
+								<RowDefinition Height="*"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+
+							<!-- Up Arrow -->
+							<Button Grid.Row="0" Grid.Column="1"
+									Content="▲"
+									Click="OnUpKey"
+									Width="50"
+									Height="32"
+									FontSize="14"
+									Background="{StaticResource ButtonGradient}"
+									Foreground="White"
+									CornerRadius="6"
+									BorderBrush="#6A6A74"
+									BorderThickness="1"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"
+									Margin="0,0,2,0"/>
+
+							<!-- Left Arrow - D-Pad size unchanged -->
+							<Button Grid.Row="1" Grid.Column="0"
+									Content="◀"
+									Click="OnLeftKey"
+									Width="32"
+									Height="50"
+									FontSize="14"
+									Background="{StaticResource ButtonGradient}"
+									Foreground="White"
+									CornerRadius="6"
+									BorderBrush="#6A6A74"
+									BorderThickness="1"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"
+									HorizontalAlignment="Right"
+									Margin="0,0,5,0"/>
+
+							<!-- OK Button - D-Pad size unchanged -->
+							<Button Grid.Row="1" Grid.Column="1"
+									Content="OK"
+									Click="OnSelectKey"
+									Width="55"
+									Height="55"
+									FontSize="12"
+									FontWeight="Bold"
+									Background="{StaticResource OkButtonGradient}"
+									Foreground="White"
+									CornerRadius="27"
+									BorderBrush="#8A4DC1"
+									BorderThickness="2"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"
+									Margin="0,0,5,0">
+								<Button.Effect>
+									<DropShadowEffect Color="#662D91" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.3"/>
+								</Button.Effect>
+							</Button>
+
+							<!-- Right Arrow - D-Pad size unchanged -->
+							<Button Grid.Row="1" Grid.Column="2"
+									Content="▶"
+									Click="OnRightKey"
+									Width="32"
+									Height="50"
+									FontSize="14"
+									Background="{StaticResource ButtonGradient}"
+									Foreground="White"
+									CornerRadius="6"
+									BorderBrush="#6A6A74"
+									BorderThickness="1"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"
+									HorizontalAlignment="Right"
+									Margin="0,0,6,0"/>
+
+							<!-- Down Arrow - D-Pad size unchanged -->
+							<Button Grid.Row="2" Grid.Column="1"
+									Content="▼"
+									Click="OnDownKey"
+									Width="50"
+									Height="32"
+									FontSize="14"
+									Background="{StaticResource ButtonGradient}"
+									Foreground="White"
+									CornerRadius="6"
+									BorderBrush="#6A6A74"
+									BorderThickness="1"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"
+									Margin="0,0,2,0"/>
+						</Grid>
+					</Grid>
+
+					<!-- Options and Star Buttons -->
+					<StackPanel Orientation="Horizontal" Spacing="45" HorizontalAlignment="Center" Margin="0,5,0,12">
+						<Button Content="*"
+								Click="OnStarKey"
+								Width="45"
+								Height="36"
+								FontSize="18"
+								Background="{StaticResource ButtonGradient}"
+								Foreground="White"
+								CornerRadius="5"
+								BorderBrush="#6A6A74"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"/>
+						<Button Content="≡"
+								Click="OnOptionsKey"
+								Width="45"
+								Height="36"
+								FontSize="18"
+								Background="{StaticResource ButtonGradient}"
+								Foreground="White"
+								CornerRadius="5"
+								BorderBrush="#6A6A74"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"/>
+					</StackPanel>
+
+					<!-- Media Control Buttons -->
+					<StackPanel Orientation="Horizontal" Spacing="15" HorizontalAlignment="Center" Margin="0,0,0,12">
+						<Button Content="⏪"
+								Click="OnRewindKey"
+								Width="50"
+								Height="36"
+								FontSize="16"
+								Background="{StaticResource ButtonGradient}"
+								Foreground="White"
+								CornerRadius="6"
+								BorderBrush="#6A6A74"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"/>
+						<Button Content="⏯"
+								Click="OnPlayPauseKey"
+								Width="50"
+								Height="36"
+								FontSize="16"
+								Background="{StaticResource ButtonGradient}"
+								Foreground="White"
+								CornerRadius="6"
+								BorderBrush="#6A6A74"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"/>
+						<Button Content="⏩"
+								Click="OnFastForwardKey"
+								Width="50"
+								Height="36"
+								FontSize="16"
+								Background="{StaticResource ButtonGradient}"
+								Foreground="White"
+								CornerRadius="6"
+								BorderBrush="#6A6A74"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"/>
+					</StackPanel>
+
+					<!-- Volume Controls -->
+					<StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,0,0,12">
+						<Button Content="🔇"
+									Click="OnMuteKey"
+									Width="45"
+									Height="32"
+									FontSize="14"
+									Background="{StaticResource ButtonGradient}"
+									Foreground="White"
+									CornerRadius="5"
+									BorderBrush="#6A6A74"
+									BorderThickness="1"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"/>
+						<Button Content="VOL-"
+									Click="OnVolumeDownKey"
+									Width="48"
+									Height="32"
+									FontSize="10"
+									Background="{StaticResource ButtonGradient}"
+									Foreground="White"
+									CornerRadius="5"
+									BorderBrush="#6A6A74"
+									BorderThickness="1"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"/>
+						<Button Content="VOL+"
+									Click="OnVolumeUpKey"
+									Width="48"
+									Height="32"
+									FontSize="10"
+									Background="{StaticResource ButtonGradient}"
+									Foreground="White"
+									CornerRadius="5"
+									BorderBrush="#6A6A74"
+									BorderThickness="1"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"/>
+					</StackPanel>
+
+					<!-- Customizable Quick Launch Row -->
+					<StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center" Margin="0,8,0,0">
+						<!-- Quick Launch Label and Configure Button -->
+						<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
+							<TextBlock Text="Quick Launch"
+									   FontSize="8"
+									   Foreground="#CCCCCC"
+									   VerticalAlignment="Center"/>
+							<Button Content="⚙"
+									Click="OnConfigureQuickLaunch"
+									Background="#444444"
+									Foreground="White"
+									BorderBrush="#666666"
+									BorderThickness="1"
+									CornerRadius="4"
+									Padding="8,4"
+									Width="20"
+									Height="20"
+									FontSize="8"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"
+									ToolTip.Tip="Configure Quick Launch Buttons"/>
+						</StackPanel>
+
+						<!-- Quick Launch Buttons Row -->
+						<StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+							<Button Name="QuickLaunch1"
+									Content="{Binding QuickLaunchButton1Text}"
+									Click="OnQuickLaunch1"
+									Width="42"
+									Height="28"
+									FontSize="9"
+									FontWeight="Bold"
+									Background="{StaticResource QuickLaunchGradient}"
+									Foreground="White"
+									CornerRadius="3"
+									BorderBrush="#FF9C52"
+									BorderThickness="1"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"
+									IsVisible="{Binding QuickLaunchButton1Visible}"
+									ToolTip.Tip="{Binding QuickLaunchButton1Tooltip}"/>
+
+							<Button Name="QuickLaunch2"
+									Content="{Binding QuickLaunchButton2Text}"
+									Click="OnQuickLaunch2"
+									Width="42"
+									Height="28"
+									FontSize="9"
+									FontWeight="Bold"
+									Background="{StaticResource QuickLaunchGradient}"
+									Foreground="White"
+									CornerRadius="3"
+									BorderBrush="#FF9C52"
+									BorderThickness="1"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"
+									IsVisible="{Binding QuickLaunchButton2Visible}"
+									ToolTip.Tip="{Binding QuickLaunchButton2Tooltip}"/>
+
+							<Button Name="QuickLaunch3"
+									Content="{Binding QuickLaunchButton3Text}"
+									Click="OnQuickLaunch3"
+									Width="42"
+									Height="28"
+									FontSize="9"
+									FontWeight="Bold"
+									Background="{StaticResource QuickLaunchGradient}"
+									Foreground="White"
+									CornerRadius="3"
+									BorderBrush="#FF9C52"
+									BorderThickness="1"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"
+									IsVisible="{Binding QuickLaunchButton3Visible}"
+									ToolTip.Tip="{Binding QuickLaunchButton3Tooltip}"/>
+
+							<Button Name="QuickLaunch4"
+									Content="{Binding QuickLaunchButton4Text}"
+									Click="OnQuickLaunch4"
+									Width="35"
+									Height="22"
+									FontSize="7"
+									FontWeight="Bold"
+									Background="{StaticResource QuickLaunchGradient}"
+									Foreground="White"
+									CornerRadius="3"
+									BorderBrush="#FF9C52"
+									BorderThickness="1"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"
+									IsVisible="{Binding QuickLaunchButton4Visible}"
+									ToolTip.Tip="{Binding QuickLaunchButton4Tooltip}"/>
+						</StackPanel>
+					</StackPanel>
+
+				</StackPanel>
+			</Border>
+
+			<!-- Apps Panel -->
+			<Border Grid.Column="2"
+					BorderBrush="Gray"
+					BorderThickness="1"
+					CornerRadius="10"
+					Padding="15"
+					IsEnabled="{Binding IsConnected}">
+				
+				<!-- Single Grid container to hold both views -->
+				<Grid>
+					<!-- Installed Apps View -->
+					<Grid Name="InstalledAppsView" 
+						  IsVisible="{Binding ShowInstalledApps}">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="*"/>
+							<RowDefinition Height="Auto"/>
+						</Grid.RowDefinitions>
+
+						<TextBlock Grid.Row="0" 
+								   Text="Installed Apps" 
+								   FontSize="18" 
+								   FontWeight="Bold"
+								   Margin="0,0,0,2"/>
+
+						<ListBox Grid.Row="1"
+								 ItemsSource="{Binding DeviceApps}"
+								 SelectionChanged="OnLaunchApp"
+								 ScrollViewer.VerticalScrollBarVisibility="Auto">
+							<ListBox.ItemContainerTheme>
+								<ControlTheme TargetType="ListBoxItem">
+									<Setter Property="Padding" Value="4,2"/>
+									<Setter Property="MinHeight" Value="36"/>
+									<Setter Property="Height" Value="36"/>
+								</ControlTheme>
+							</ListBox.ItemContainerTheme>
+							<ListBox.ItemTemplate>
+								<DataTemplate x:DataType="roku:RokuApp">
+									<StackPanel Orientation="Horizontal" Spacing="8" Margin="0">
+										<Image Source="{Binding IconImage}"
+											   Width="36"
+											   Height="36"
+											   Stretch="Uniform"
+											   VerticalAlignment="Center"/>
+										<TextBlock Text="{Binding Name}"
+												   VerticalAlignment="Center"
+												   FontSize="14"/>
+									</StackPanel>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+
+						<TextBlock Grid.Row="2" 
+								   Text="{Binding RecordingModeInstructions}"
+								   FontStyle="Italic"
+								   FontSize="12"
+								   Foreground="Gray"
+								   TextWrapping="Wrap"
+								   Margin="0,2,0,0"/>
+					</Grid>
+
+					<!-- Quick Launch Configuration View -->
+					<StackPanel Name="QuickLaunchConfigView" 
+								Spacing="10"
+								IsVisible="{Binding ShowQuickLaunchConfig}">
+						
+						<!-- Header -->
+						<TextBlock Text="Configure Quick Launch" 
+								   FontSize="18" 
+								   FontWeight="Bold"
+								   HorizontalAlignment="Center"/>
+
+						<ScrollViewer MaxHeight="450" VerticalScrollBarVisibility="Auto">
+							<StackPanel Spacing="15">
+								<TextBlock Text="Set up to 4 quick launch buttons with custom action sequences:"
+										   FontSize="12"
+										   TextWrapping="Wrap"/>
+
+								<!-- Button 1 Configuration -->
+								<Border Background="#2A2A2A" CornerRadius="8" Padding="10">
+									<StackPanel Spacing="8">
+										<CheckBox Name="QuickLaunch1EnabledCB"
+												  Content="Button 1 Enabled"
+												  IsChecked="{Binding QuickLaunchButton1Visible}"
+												  FontSize="12" FontWeight="Bold"/>
+										<Grid ColumnDefinitions="Auto,*">
+											<TextBlock Grid.Column="0" Text="Label:" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
+											<TextBox Grid.Column="1"
+													 Name="QuickLaunch1TextTB"
+													 Text="{Binding QuickLaunchButton1Text}"
+													 FontSize="11"
+													 Watermark="Button text"/>
+										</Grid>
+										
+										<Grid ColumnDefinitions="Auto,*,Auto,Auto">
+											<TextBlock Grid.Column="0" Text="Actions:" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
+											<TextBlock Grid.Column="1"
+													   Text="{Binding QuickLaunchButton1Summary}"
+													   FontSize="10"
+													   Foreground="#CCCCCC"
+													   VerticalAlignment="Center"
+													   TextWrapping="Wrap"/>
+											<Button Grid.Column="2"
+													Content="👁 Review"
+													Click="OnReviewButton1"
+													Background="{StaticResource ReviewGradient}"
+													Foreground="White"
+													BorderThickness="0"
+													CornerRadius="4"
+													Padding="6,4"
+													FontSize="9"
+													FontWeight="Bold"
+													Margin="0,0,4,0"
+													HorizontalContentAlignment="Center"
+													VerticalContentAlignment="Center"
+													ToolTip.Tip="Review and edit actions"
+													IsEnabled="{Binding QuickLaunchButton1HasActions}"/>
+											<Button Grid.Column="3"
+													Content="● REC"
+													Click="OnRecordButton1"
+													Background="{StaticResource RecordGradient}"
+													Foreground="White"
+													BorderThickness="0"
+													CornerRadius="4"
+													Padding="6,4"
+													FontSize="9"
+													FontWeight="Bold"
+													HorizontalContentAlignment="Center"
+													VerticalContentAlignment="Center"
+													ToolTip.Tip="Record action sequence"/>
+										</Grid>
+									</StackPanel>
+								</Border>
+
+								<!-- Button 2 Configuration -->
+								<Border Background="#2A2A2A" CornerRadius="8" Padding="10">
+									<StackPanel Spacing="8">
+										<CheckBox Name="QuickLaunch2EnabledCB"
+												  Content="Button 2 Enabled"
+												  IsChecked="{Binding QuickLaunchButton2Visible}"
+												  FontSize="12" FontWeight="Bold"/>
+										<Grid ColumnDefinitions="Auto,*">
+											<TextBlock Grid.Column="0" Text="Label:" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
+											<TextBox Grid.Column="1"
+													 Name="QuickLaunch2TextTB"
+													 Text="{Binding QuickLaunchButton2Text}"
+													 FontSize="11"
+													 Watermark="Button text"/>
+										</Grid>
+										
+										<Grid ColumnDefinitions="Auto,*,Auto,Auto">
+											<TextBlock Grid.Column="0" Text="Actions:" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
+											<TextBlock Grid.Column="1"
+													   Text="{Binding QuickLaunchButton2Summary}"
+													   FontSize="10"
+													   Foreground="#CCCCCC"
+													   VerticalAlignment="Center"
+													   TextWrapping="Wrap"/>
+											<Button Grid.Column="2"
+													Content="👁 Review"
+													Click="OnReviewButton2"
+													Background="{StaticResource ReviewGradient}"
+													Foreground="White"
+													BorderThickness="0"
+													CornerRadius="4"
+													Padding="6,4"
+													FontSize="9"
+													FontWeight="Bold"
+													Margin="0,0,4,0"
+													HorizontalContentAlignment="Center"
+													VerticalContentAlignment="Center"
+													ToolTip.Tip="Review and edit actions"
+													IsEnabled="{Binding QuickLaunchButton2HasActions}"/>
+											<Button Grid.Column="3"
+													Content="● REC"
+													Click="OnRecordButton2"
+													Background="{StaticResource RecordGradient}"
+													Foreground="White"
+													BorderThickness="0"
+													CornerRadius="4"
+													Padding="6,4"
+													FontSize="9"
+													FontWeight="Bold"
+													HorizontalContentAlignment="Center"
+													VerticalContentAlignment="Center"
+													ToolTip.Tip="Record action sequence"/>
+										</Grid>
+									</StackPanel>
+								</Border>
+
+								<!-- Button 3 Configuration -->
+								<Border Background="#2A2A2A" CornerRadius="8" Padding="10">
+									<StackPanel Spacing="8">
+										<CheckBox Name="QuickLaunch3EnabledCB"
+												  Content="Button 3 Enabled"
+												  IsChecked="{Binding QuickLaunchButton3Visible}"
+												  FontSize="12" FontWeight="Bold"/>
+										<Grid ColumnDefinitions="Auto,*">
+											<TextBlock Grid.Column="0" Text="Label:" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
+											<TextBox Grid.Column="1"
+													 Name="QuickLaunch3TextTB"
+													 Text="{Binding QuickLaunchButton3Text}"
+													 FontSize="11"
+													 Watermark="Button text"/>
+										</Grid>
+										
+										<Grid ColumnDefinitions="Auto,*,Auto,Auto">
+											<TextBlock Grid.Column="0" Text="Actions:" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
+											<TextBlock Grid.Column="1"
+													   Text="{Binding QuickLaunchButton3Summary}"
+													   FontSize="10"
+													   Foreground="#CCCCCC"
+													   VerticalAlignment="Center"
+													   TextWrapping="Wrap"/>
+											<Button Grid.Column="2"
+													Content="👁 Review"
+													Click="OnReviewButton3"
+													Background="{StaticResource ReviewGradient}"
+													Foreground="White"
+													BorderThickness="0"
+													CornerRadius="4"
+													Padding="6,4"
+													FontSize="9"
+													FontWeight="Bold"
+													Margin="0,0,4,0"
+													HorizontalContentAlignment="Center"
+													VerticalContentAlignment="Center"
+													ToolTip.Tip="Review and edit actions"
+													IsEnabled="{Binding QuickLaunchButton3HasActions}"/>
+											<Button Grid.Column="3"
+													Content="● REC"
+													Click="OnRecordButton3"
+													Background="{StaticResource RecordGradient}"
+													Foreground="White"
+													BorderThickness="0"
+													CornerRadius="4"
+													Padding="6,4"
+													FontSize="9"
+													FontWeight="Bold"
+													HorizontalContentAlignment="Center"
+													VerticalContentAlignment="Center"
+													ToolTip.Tip="Record action sequence"/>
+										</Grid>
+									</StackPanel>
+								</Border>
+
+								<!-- Button 4 Configuration -->
+								<Border Background="#2A2A2A" CornerRadius="8" Padding="10">
+									<StackPanel Spacing="8">
+										<CheckBox Name="QuickLaunch4EnabledCB"
+												  Content="Button 4 Enabled"
+												  IsChecked="{Binding QuickLaunchButton4Visible}"
+												  FontSize="12" FontWeight="Bold"/>
+										<Grid ColumnDefinitions="Auto,*">
+											<TextBlock Grid.Column="0" Text="Label:" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
+											<TextBox Grid.Column="1"
+													 Name="QuickLaunch4TextTB"
+													 Text="{Binding QuickLaunchButton4Text}"
+													 FontSize="11"
+													 Watermark="Button text"/>
+										</Grid>
+										
+										<Grid ColumnDefinitions="Auto,*,Auto,Auto">
+											<TextBlock Grid.Column="0" Text="Actions:" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
+											<TextBlock Grid.Column="1"
+													   Text="{Binding QuickLaunchButton4Summary}"
+													   FontSize="10"
+													   Foreground="#CCCCCC"
+													   VerticalAlignment="Center"
+													   TextWrapping="Wrap"/>
+											<Button Grid.Column="2"
+													Content="👁 Review"
+													Click="OnReviewButton4"
+													Background="{StaticResource ReviewGradient}"
+													Foreground="White"
+													BorderThickness="0"
+													CornerRadius="4"
+													Padding="6,4"
+													FontSize="9"
+													FontWeight="Bold"
+													Margin="0,0,4,0"
+													HorizontalContentAlignment="Center"
+													VerticalContentAlignment="Center"
+													ToolTip.Tip="Review and edit actions"
+													IsEnabled="{Binding QuickLaunchButton4HasActions}"/>
+											<Button Grid.Column="3"
+													Content="● REC"
+													Click="OnRecordButton4"
+													Background="{StaticResource RecordGradient}"
+													Foreground="White"
+													BorderThickness="0"
+													CornerRadius="4"
+													Padding="6,4"
+													FontSize="9"
+													FontWeight="Bold"
+													HorizontalContentAlignment="Center"
+													VerticalContentAlignment="Center"
+													ToolTip.Tip="Record action sequence"/>
+										</Grid>
+									</StackPanel>
+								</Border>
+							</StackPanel>
+						</ScrollViewer>
+
+						<!-- Action Buttons -->
+						<StackPanel Orientation="Horizontal" Spacing="15" HorizontalAlignment="Center" Margin="0,15,0,0">
+							<Button Content="Save and Return"
+									Click="OnSaveQuickLaunchConfig"
+									Background="#5CB85C"
+									Foreground="White"
+									BorderBrush="#4CAE4C"
+									BorderThickness="1"
+									CornerRadius="4"
+									Padding="20,8"
+									FontSize="12"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"/>
+							<Button Content="Cancel"
+									Click="OnCancelQuickLaunchConfig"
+									Background="#D9534F"
+									Foreground="White"
+									BorderBrush="#D43F3A"
+									BorderThickness="1"
+									CornerRadius="4"
+									Padding="20,8"
+									FontSize="12"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"/>
+						</StackPanel>
+					</StackPanel>
+				</Grid>
+			</Border>
+		</Grid>
+
+		<!-- Recording Dialog - Moved to top-left of entire window -->
+		<Border Grid.Row="0" Grid.RowSpan="2"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Top"
+				Margin="10,120,0,0"
+				IsVisible="{Binding IsRecording}"
+				IsHitTestVisible="True"
+				ZIndex="2000">
+			<Border Background="#1A1A24" 
+					BorderBrush="#FF2C2C" 
+					BorderThickness="2" 
+					CornerRadius="10" 
+					Padding="12">
+				<Border.Effect>
+					<DropShadowEffect Color="#FF2C2C" BlurRadius="8" OffsetX="2" OffsetY="2" Opacity="0.5"/>
+				</Border.Effect>
+				
+				<StackPanel Spacing="8" Width="200">
+					<!-- Recording Header -->
+					<StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+						<TextBlock Text="●" FontSize="10" Foreground="#FF2C2C" VerticalAlignment="Center"/>
+						<TextBlock Text="RECORDING" 
+								   FontSize="10" 
+								   FontWeight="Bold" 
+								   Foreground="#FF2C2C"
+								   VerticalAlignment="Center"/>
+						<TextBlock Text="{Binding RecordingStatusText}" 
+								   FontSize="9" 
+								   Foreground="White"
+								   VerticalAlignment="Center"/>
+					</StackPanel>
+					
+					<!-- Action Count -->
+					<TextBlock Text="{Binding RecordedActionsText}" 
+							   FontSize="9" 
+							   TextWrapping="Wrap"
+							   HorizontalAlignment="Center" 
+							   TextAlignment="Center"
+							   Foreground="#CCCCCC"/>
+					
+					<!-- Action Buttons -->
+					<StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center" Margin="0,4,0,0">
+						<Button Content="✓ Save"
+								Click="OnSaveRecording"
+								Background="#5CB85C"
+								Foreground="White"
+								BorderThickness="0"
+								CornerRadius="4"
+								Padding="10,3"
+								FontSize="9"
+								FontWeight="Bold"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"/>
+						<Button Content="✗ Cancel"
+								Click="OnCancelRecording"
+								Background="#D9534F"
+								Foreground="White"
+								BorderThickness="0"
+								CornerRadius="4"
+								Padding="10,3"
+								FontSize="9"
+								FontWeight="Bold"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"/>
+					</StackPanel>
+				</StackPanel>
+			</Border>
+		</Border>
+	</Grid>
+	</dialogHostAvalonia:DialogHost>
+</Window>

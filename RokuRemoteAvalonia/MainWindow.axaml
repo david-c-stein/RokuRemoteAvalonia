@@ -5,12 +5,12 @@
         xmlns:vm="using:RokuRemoteAvalonia"
         xmlns:roku="using:RRemote.Roku"
 		xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
-        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="850"
         x:Class="RokuRemoteAvalonia.MainWindow"
         x:DataType="vm:MainWindow"
         Title="Roku Remote Control - Avalonia"
-        MinWidth="600" MinHeight="600"
-		Width="650" Height="850">
+        MinWidth="900" MinHeight="850"
+		Width="900" Height="850">
 
 	<Window.Resources>
 		<!-- Remote Control Gradient Background -->
@@ -69,6 +69,29 @@
 			<GradientStop Color="#0F6674" Offset="1"/>
 		</LinearGradientBrush>
 		
+		<!-- ===== SVG-style Vector Icon Geometries ===== -->
+		<StreamGeometry x:Key="SearchGeometry">M15.5,14h-0.79l-0.28-0.27C15.41,12.59 16,11.11 16,9.5 16,5.91 13.09,3 9.5,3S3,5.91 3,9.5 5.91,16 9.5,16c1.61,0 3.09-0.59 4.23-1.57l0.27,0.28v0.79l5,4.99L20.49,19l-4.99-5zM9.5,14C7.01,14 5,11.99 5,9.5S7.01,5 9.5,5 14,7.01 14,9.5 11.99,14 9.5,14z</StreamGeometry>
+		<StreamGeometry x:Key="MicrophoneGeometry">M12,14c1.66,0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9,3.34 9,5v6C9,12.66 10.34,14 12,14zM17,11c0,2.76-2.24,5-5,5s-5-2.24-5-5H5c0,3.53 2.61,6.43 6,6.92V21h2v-3.08c3.39-0.49 6-3.39 6-6.92H17z</StreamGeometry>
+		<StreamGeometry x:Key="KeyboardGeometry">M20,5H4C2.9,5 2,5.9 2,7v10c0,1.1 0.9,2 2,2h16c1.1,0 2-0.9 2-2V7C22,5.9 21.1,5 20,5zM11,8h2v2h-2V8zM11,11h2v2h-2V11zM8,8h2v2H8V8zM8,11h2v2H8V11zM7,13H5v-2h2V13zM7,10H5V8h2V10zM16,17H8v-2h8V17zM16,13h-2v-2h2V13zM16,10h-2V8h2V10zM19,13h-2v-2h2V13zM19,10h-2V8h2V10z</StreamGeometry>
+		<StreamGeometry x:Key="InfoGeometry">M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10-4.48 10-10S17.52,2 12,2zM13,17h-2v-6h2V17zM13,9h-2V7h2V9z</StreamGeometry>
+		<StreamGeometry x:Key="SettingsGeometry">M19.14,12.94c0.04-0.3 0.06-0.61 0.06-0.94 0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14 0.23-0.41 0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59 8.12,5.92 7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87C2.62,9.08 2.66,9.34 2.86,9.48l2.03,1.58C4.84,11.36 4.8,11.69 4.8,12s0.02,0.64 0.07,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22 0.37,0.29 0.59,0.22l2.39-0.96c0.5,0.38 1.03,0.7 1.62,0.94l0.36,2.54c0.05,0.24 0.24,0.41 0.48,0.41h3.84c0.24,0 0.44-0.17 0.47-0.41l0.36-2.54c0.59-0.24 1.13-0.56 1.62-0.94l2.39,0.96c0.22,0.08 0.47,0 0.59-0.22l1.92-3.32c0.12-0.22 0.07-0.47-0.12-0.61L19.14,12.94zM12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6,1.62 3.6,3.6-1.62,3.6-3.6,3.6z</StreamGeometry>
+		<StreamGeometry x:Key="PowerGeometry">M13,3h-2v10h2V3zM17.83,5.17l-1.42,1.42C17.99,7.86 19,9.81 19,12c0,3.87-3.13,7-7,7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17,5.17C4.23,6.82 3,9.26 3,12c0,4.97 4.03,9 9,9s9-4.03 9-9C21,9.26 19.77,6.82 17.83,5.17z</StreamGeometry>
+		<StreamGeometry x:Key="BackGeometry">M20,11H7.83l5.59-5.59L12,4l-8,8 8,8 1.41-1.41L7.83,13H20V11z</StreamGeometry>
+		<StreamGeometry x:Key="HomeGeometry">M10,20v-6h4v6h5v-8h3L12,3 2,12h3v8z</StreamGeometry>
+		<StreamGeometry x:Key="UpGeometry">M7.41,15.41L12,10.83l4.59,4.58L18,14l-6-6-6,6z</StreamGeometry>
+		<StreamGeometry x:Key="DownGeometry">M7.41,8.59L12,13.17l4.59-4.58L18,10l-6,6-6-6z</StreamGeometry>
+		<StreamGeometry x:Key="LeftGeometry">M15.41,16.59L10.83,12l4.58-4.59L14,6l-6,6 6,6z</StreamGeometry>
+		<StreamGeometry x:Key="RightGeometry">M8.59,16.59L13.17,12 8.59,7.41 10,6l6,6-6,6z</StreamGeometry>
+		<StreamGeometry x:Key="StarGeometry">M12,17.27L18.18,21l-1.64-7.03L22,9.24l-7.19-0.61L12,2 9.19,8.63 2,9.24l5.46,4.73L5.82,21z</StreamGeometry>
+		<StreamGeometry x:Key="MenuGeometry">M3,18h18v-2H3V18zM3,13h18v-2H3V13zM3,6v2h18V6H3z</StreamGeometry>
+		<StreamGeometry x:Key="RewindGeometry">M11,18V6l-8.5,6L11,18zM11.5,18l8.5-6l-8.5-6V18z</StreamGeometry>
+		<StreamGeometry x:Key="PlayGeometry">M8,5v14l11-7z</StreamGeometry>
+		<StreamGeometry x:Key="FastForwardGeometry">M4,18l8.5-6L4,6V18zM13,6v12l8.5-6L13,6z</StreamGeometry>
+		<StreamGeometry x:Key="MuteGeometry">M16.5,12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45,2.45c0.03-0.2 0.05-0.41 0.05-0.63zM19,12c0,0.94-0.2,1.82-0.54,2.64l1.51,1.51C20.63,14.91 21,13.5 21,12c0-4.28-2.99-7.86-7-8.77v2.06c2.89,0.86 5,3.54 5,6.71zM4.27,3L3,4.27 7.73,9H3v6h4l5,5v-6.73l4.25,4.25c-0.67,0.52-1.42,0.93-2.25,1.18v2.06c1.38-0.31 2.63-0.95 3.69-1.81L19.73,21 21,19.73l-9-9L4.27,3zM12,4L9.91,6.09 12,8.18V4z</StreamGeometry>
+		<StreamGeometry x:Key="EyeGeometry">M12,4.5C7,4.5 2.73,7.61 1,12c1.73,4.39 6,7.5 11,7.5s9.27-3.11 11-7.5C21.27,7.61 17,4.5 12,4.5zM12,17c-2.76,0-5-2.24-5-5s2.24-5 5-5 5,2.24 5,5-2.24,5-5,5zM12,9c-1.66,0-3,1.34-3,3s1.34,3 3,3 3-1.34 3-3-1.34-3-3-3z</StreamGeometry>
+		<StreamGeometry x:Key="RecordGeometry">M12,4c-4.41,0-8,3.59-8,8s3.59,8 8,8 8-3.59 8-8-3.59-8-8-8z</StreamGeometry>
+		<StreamGeometry x:Key="VolumeDownGeometry">M18.5,12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-0.73 2.5-2.25 2.5-4.02zM5,9v6h4l5,5V4L9,9H5z</StreamGeometry>
+		<StreamGeometry x:Key="VolumeUpGeometry">M3,9v6h4l5,5V4L7,9H3zm13.5,3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-0.73 2.5-2.25 2.5-4.02zM14,3.23v2.06c2.89,0.86 5,3.54 5,6.71s-2.11,5.85-5,6.71v2.06c4.01-0.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z</StreamGeometry>
 	</Window.Resources>
 
 	<dialogHostAvalonia:DialogHost Identifier="MainDialogHost"
@@ -88,7 +111,7 @@
 
 			<!-- Device Discovery -->
 			<StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
-				<Button Content="Discover Devices" Click="OnDiscoverDevices" Padding="10,5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+				<Button Content="Discover Devices" Click="OnDiscoverDevices" Padding="10,5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" ToolTip.Tip="Discover Roku devices on your network"/>
 				<ComboBox Name="DeviceComboBox"
 						  ItemsSource="{Binding DiscoveredDevices}"
 						  SelectedItem="{Binding SelectedDevice}"
@@ -125,7 +148,7 @@
 					IsEnabled="{Binding IsConnected}"
 					BorderBrush="#303040"
 					BorderThickness="1"
-					Width="280"
+					Width="240"
 					Height="620"
 					VerticalAlignment="Top">
 				<Border.Effect>
@@ -156,7 +179,7 @@
 							HorizontalAlignment="Center"
 							Margin="0,0,0,5">
 						<StackPanel Orientation="Horizontal" Spacing="5">
-							<TextBlock Text="●" FontSize="14" Foreground="White" VerticalAlignment="Center"/>
+							<PathIcon Data="{StaticResource RecordGeometry}" Width="14" Height="14" Foreground="White"/>
 							<TextBlock Text="{Binding RecordingStatusText}" 
 									   FontSize="10" 
 									   FontWeight="Bold"
@@ -168,11 +191,9 @@
 					<!-- Top Function Buttons Row -->
 					<StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center" Margin="0,5,0,10">
 						<!-- Search Button -->
-						<Button Content="🔍"
-								Click="OnSearchClick"
+						<Button Click="OnSearchClick"
 								Width="35"
 								Height="30"
-								FontSize="14"
 								Background="{StaticResource FunctionButtonGradient}"
 								Foreground="White"
 								CornerRadius="8"
@@ -181,37 +202,16 @@
 								HorizontalContentAlignment="Center"
 								VerticalContentAlignment="Center"
 								ToolTip.Tip="Search Apps">
-							<Button.Effect>
-								<DropShadowEffect Color="#4169E1" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
-							</Button.Effect>
-						</Button>
-
-						<!-- Microphone Button -->
-						<Button Content="🎤"
-								Click="OnMicrophoneClick"
-								Width="35"
-								Height="30"
-								FontSize="14"
-								Background="{StaticResource FunctionButtonGradient}"
-								Foreground="White"
-								CornerRadius="8"
-								BorderBrush="#5A7FE1"
-								BorderThickness="1"
-								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"
-								ToolTip.Tip="Voice Search">
+							<PathIcon Data="{StaticResource SearchGeometry}" Width="16" Height="16" Foreground="White"/>
 							<Button.Effect>
 								<DropShadowEffect Color="#4169E1" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
 							</Button.Effect>
 						</Button>
 
 						<!-- Keyboard Button -->
-						<Button Content="{Binding KeyboardButtonText}"
-								Click="OnKeyboardToggle"
+						<Button Click="OnKeyboardToggle"
 								Width="35"
 								Height="30"
-								FontSize="10"
-								FontWeight="Bold"
 								Background="{StaticResource FunctionButtonGradient}"
 								Foreground="White"
 								CornerRadius="8"
@@ -220,17 +220,16 @@
 								HorizontalContentAlignment="Center"
 								VerticalContentAlignment="Center"
 								ToolTip.Tip="Toggle Keyboard Mode">
+							<PathIcon Data="{StaticResource KeyboardGeometry}" Width="16" Height="16" Foreground="White"/>
 							<Button.Effect>
 								<DropShadowEffect Color="#4169E1" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
 							</Button.Effect>
 						</Button>
 
 						<!-- Info Button -->
-						<Button Content="ℹ️"
-								Click="OnInfoClick"
+						<Button Click="OnInfoClick"
 								Width="35"
 								Height="30"
-								FontSize="14"
 								Background="{StaticResource InfoButtonGradient}"
 								Foreground="White"
 								CornerRadius="8"
@@ -239,17 +238,16 @@
 								HorizontalContentAlignment="Center"
 								VerticalContentAlignment="Center"
 								ToolTip.Tip="Device Information">
+							<PathIcon Data="{StaticResource InfoGeometry}" Width="16" Height="16" Foreground="White"/>
 							<Button.Effect>
 								<DropShadowEffect Color="#17A2B8" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
 							</Button.Effect>
 						</Button>
 
 						<!-- Settings Button -->
-						<Button Content="⚙️"
-								Click="OnSettingsClick"
+						<Button Click="OnSettingsClick"
 								Width="35"
 								Height="30"
-								FontSize="14"
 								Background="{StaticResource FunctionButtonGradient}"
 								Foreground="White"
 								CornerRadius="8"
@@ -258,6 +256,7 @@
 								HorizontalContentAlignment="Center"
 								VerticalContentAlignment="Center"
 								ToolTip.Tip="Settings">
+							<PathIcon Data="{StaticResource SettingsGeometry}" Width="16" Height="16" Foreground="White"/>
 							<Button.Effect>
 								<DropShadowEffect Color="#4169E1" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
 							</Button.Effect>
@@ -266,11 +265,9 @@
 
 					<!-- Power Button -->
 					<Button Name="PowerButton"
-							Content="⏻"
 							Click="OnPowerKey"
 							Width="45"
 							Height="45"
-							FontSize="20"
 							Background="#FF4757"
 							Foreground="White"
 							CornerRadius="22"
@@ -279,7 +276,9 @@
 							VerticalContentAlignment="Center"
 							Margin="0,0,0,12"
 							BorderBrush="#FF6B7A"
-							BorderThickness="1">
+							BorderThickness="1"
+							ToolTip.Tip="Power On/Off">
+						<PathIcon Data="{StaticResource PowerGeometry}" Width="22" Height="22" Foreground="White"/>
 						<Button.Effect>
 							<DropShadowEffect Color="#FF4757" BlurRadius="6" OffsetX="0" OffsetY="0" Opacity="0.3"/>
 						</Button.Effect>
@@ -287,30 +286,32 @@
 
 					<!-- Back and Home Row -->
 					<StackPanel Orientation="Horizontal" Spacing="40" HorizontalAlignment="Center" Margin="0,0,0,12">
-						<Button Content="◀"
-								Click="OnBackKey"
+						<Button Click="OnBackKey"
 								Width="40"
 								Height="32"
-								FontSize="14"
 								Background="{StaticResource ButtonGradient}"
 								Foreground="White"
 								CornerRadius="6"
 								BorderBrush="#6A6A74"
 								BorderThickness="1"
 								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"/>
-						<Button Content="⌂"
-								Click="OnHomeKey"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Back">
+							<PathIcon Data="{StaticResource BackGeometry}" Width="16" Height="16" Foreground="White"/>
+						</Button>
+						<Button Click="OnHomeKey"
 								Width="40"
 								Height="32"
-								FontSize="16"
 								Background="{StaticResource ButtonGradient}"
 								Foreground="White"
 								CornerRadius="6"
 								BorderBrush="#6A6A74"
 								BorderThickness="1"
 								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"/>
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Home">
+							<PathIcon Data="{StaticResource HomeGeometry}" Width="18" Height="18" Foreground="White"/>
+						</Button>
 					</StackPanel>
 
 					<!-- D-Pad Navigation -->
@@ -335,11 +336,9 @@
 
 							<!-- Up Arrow -->
 							<Button Grid.Row="0" Grid.Column="1"
-									Content="▲"
 									Click="OnUpKey"
 									Width="50"
 									Height="32"
-									FontSize="14"
 									Background="{StaticResource ButtonGradient}"
 									Foreground="White"
 									CornerRadius="6"
@@ -347,15 +346,16 @@
 									BorderThickness="1"
 									HorizontalContentAlignment="Center"
 									VerticalContentAlignment="Center"
-									Margin="0,0,2,0"/>
+									Margin="0,0,2,0"
+									ToolTip.Tip="Up">
+								<PathIcon Data="{StaticResource UpGeometry}" Width="18" Height="18" Foreground="White"/>
+							</Button>
 
 							<!-- Left Arrow - D-Pad size unchanged -->
 							<Button Grid.Row="1" Grid.Column="0"
-									Content="◀"
 									Click="OnLeftKey"
 									Width="32"
 									Height="50"
-									FontSize="14"
 									Background="{StaticResource ButtonGradient}"
 									Foreground="White"
 									CornerRadius="6"
@@ -364,24 +364,33 @@
 									HorizontalContentAlignment="Center"
 									VerticalContentAlignment="Center"
 									HorizontalAlignment="Right"
-									Margin="0,0,5,0"/>
+									Margin="0,0,5,0"
+									ToolTip.Tip="Left">
+								<PathIcon Data="{StaticResource LeftGeometry}" Width="18" Height="18" Foreground="White"/>
+							</Button>
 
 							<!-- OK Button - D-Pad size unchanged -->
 							<Button Grid.Row="1" Grid.Column="1"
-									Content="OK"
 									Click="OnSelectKey"
 									Width="55"
 									Height="55"
-									FontSize="12"
-									FontWeight="Bold"
 									Background="{StaticResource OkButtonGradient}"
 									Foreground="White"
 									CornerRadius="27"
 									BorderBrush="#8A4DC1"
 									BorderThickness="2"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center"
 									HorizontalContentAlignment="Center"
 									VerticalContentAlignment="Center"
-									Margin="0,0,5,0">
+									Margin="0"
+									ToolTip.Tip="OK / Select">
+								<TextBlock Text="OK"
+										   FontSize="16"
+										   FontWeight="Bold"
+										   Foreground="White"
+										   HorizontalAlignment="Center"
+										   VerticalAlignment="Center"/>
 								<Button.Effect>
 									<DropShadowEffect Color="#662D91" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.3"/>
 								</Button.Effect>
@@ -389,11 +398,9 @@
 
 							<!-- Right Arrow - D-Pad size unchanged -->
 							<Button Grid.Row="1" Grid.Column="2"
-									Content="▶"
 									Click="OnRightKey"
 									Width="32"
 									Height="50"
-									FontSize="14"
 									Background="{StaticResource ButtonGradient}"
 									Foreground="White"
 									CornerRadius="6"
@@ -402,15 +409,16 @@
 									HorizontalContentAlignment="Center"
 									VerticalContentAlignment="Center"
 									HorizontalAlignment="Right"
-									Margin="0,0,6,0"/>
+									Margin="0,0,6,0"
+									ToolTip.Tip="Right">
+								<PathIcon Data="{StaticResource RightGeometry}" Width="18" Height="18" Foreground="White"/>
+							</Button>
 
 							<!-- Down Arrow - D-Pad size unchanged -->
 							<Button Grid.Row="2" Grid.Column="1"
-									Content="▼"
 									Click="OnDownKey"
 									Width="50"
 									Height="32"
-									FontSize="14"
 									Background="{StaticResource ButtonGradient}"
 									Foreground="White"
 									CornerRadius="6"
@@ -418,116 +426,146 @@
 									BorderThickness="1"
 									HorizontalContentAlignment="Center"
 									VerticalContentAlignment="Center"
-									Margin="0,0,2,0"/>
+									Margin="0,0,2,0"
+									ToolTip.Tip="Down">
+								<PathIcon Data="{StaticResource DownGeometry}" Width="18" Height="18" Foreground="White"/>
+							</Button>
 						</Grid>
 					</Grid>
 
 					<!-- Options and Star Buttons -->
-					<StackPanel Orientation="Horizontal" Spacing="45" HorizontalAlignment="Center" Margin="0,5,0,12">
-						<Button Content="*"
-								Click="OnStarKey"
+					<StackPanel Orientation="Horizontal" Spacing="25" HorizontalAlignment="Center" Margin="0,5,0,12">
+						<Button Click="OnOptionsKey"
 								Width="45"
 								Height="36"
-								FontSize="18"
 								Background="{StaticResource ButtonGradient}"
 								Foreground="White"
 								CornerRadius="5"
 								BorderBrush="#6A6A74"
 								BorderThickness="1"
 								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"/>
-						<Button Content="≡"
-								Click="OnOptionsKey"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Menu">
+							<PathIcon Data="{StaticResource MenuGeometry}" Width="18" Height="18" Foreground="White"/>
+						</Button>
+						<!-- Microphone Button -->
+						<Button x:Name="MicButton"
+								Width="35"
+								Height="30"
+								Background="{StaticResource FunctionButtonGradient}"
+								Foreground="White"
+								CornerRadius="8"
+								BorderBrush="#5A7FE1"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Hold to talk (Voice)">
+							<PathIcon Data="{StaticResource MicrophoneGeometry}" Width="16" Height="16" Foreground="White"/>
+							<Button.Effect>
+								<DropShadowEffect Color="#4169E1" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
+							</Button.Effect>
+						</Button>
+
+
+						<Button Click="OnStarKey"
 								Width="45"
 								Height="36"
-								FontSize="18"
 								Background="{StaticResource ButtonGradient}"
 								Foreground="White"
 								CornerRadius="5"
 								BorderBrush="#6A6A74"
 								BorderThickness="1"
 								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"/>
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Options (*)">
+							<PathIcon Data="{StaticResource StarGeometry}" Width="18" Height="18" Foreground="White"/>
+						</Button>
 					</StackPanel>
 
 					<!-- Media Control Buttons -->
 					<StackPanel Orientation="Horizontal" Spacing="15" HorizontalAlignment="Center" Margin="0,0,0,12">
-						<Button Content="⏪"
-								Click="OnRewindKey"
+												<Button Click="OnRewindKey"
 								Width="50"
 								Height="36"
-								FontSize="16"
 								Background="{StaticResource ButtonGradient}"
 								Foreground="White"
 								CornerRadius="6"
 								BorderBrush="#6A6A74"
 								BorderThickness="1"
 								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"/>
-						<Button Content="⏯"
-								Click="OnPlayPauseKey"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Rewind">
+							<PathIcon Data="{StaticResource RewindGeometry}" Width="18" Height="18" Foreground="White"/>
+						</Button>
+						<Button Click="OnPlayPauseKey"
 								Width="50"
 								Height="36"
-								FontSize="16"
 								Background="{StaticResource ButtonGradient}"
 								Foreground="White"
 								CornerRadius="6"
 								BorderBrush="#6A6A74"
 								BorderThickness="1"
 								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"/>
-						<Button Content="⏩"
-								Click="OnFastForwardKey"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Play / Pause">
+							<PathIcon Data="{StaticResource PlayGeometry}" Width="18" Height="18" Foreground="White"/>
+						</Button>
+						<Button Click="OnFastForwardKey"
 								Width="50"
 								Height="36"
-								FontSize="16"
 								Background="{StaticResource ButtonGradient}"
 								Foreground="White"
 								CornerRadius="6"
 								BorderBrush="#6A6A74"
 								BorderThickness="1"
 								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"/>
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Fast Forward">
+							<PathIcon Data="{StaticResource FastForwardGeometry}" Width="18" Height="18" Foreground="White"/>
+						</Button>
 					</StackPanel>
 
 					<!-- Volume Controls -->
 					<StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,0,0,12">
-						<Button Content="🔇"
-									Click="OnMuteKey"
+												<Button Click="OnMuteKey"
 									Width="45"
 									Height="32"
-									FontSize="14"
 									Background="{StaticResource ButtonGradient}"
 									Foreground="White"
 									CornerRadius="5"
 									BorderBrush="#6A6A74"
 									BorderThickness="1"
 									HorizontalContentAlignment="Center"
-									VerticalContentAlignment="Center"/>
-						<Button Content="VOL-"
-									Click="OnVolumeDownKey"
-									Width="48"
-									Height="32"
-									FontSize="10"
-									Background="{StaticResource ButtonGradient}"
-									Foreground="White"
-									CornerRadius="5"
-									BorderBrush="#6A6A74"
-									BorderThickness="1"
-									HorizontalContentAlignment="Center"
-									VerticalContentAlignment="Center"/>
-						<Button Content="VOL+"
-									Click="OnVolumeUpKey"
-									Width="48"
-									Height="32"
-									FontSize="10"
-									Background="{StaticResource ButtonGradient}"
-									Foreground="White"
-									CornerRadius="5"
-									BorderBrush="#6A6A74"
-									BorderThickness="1"
-									HorizontalContentAlignment="Center"
-									VerticalContentAlignment="Center"/>
+									VerticalContentAlignment="Center"
+									ToolTip.Tip="Mute">
+							<PathIcon Data="{StaticResource MuteGeometry}" Width="18" Height="18" Foreground="White"/>
+						</Button>
+						<Button Click="OnVolumeDownKey"
+								Width="48"
+								Height="32"
+								Background="{StaticResource ButtonGradient}"
+								Foreground="White"
+								CornerRadius="5"
+								BorderBrush="#6A6A74"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Volume Down">
+							<PathIcon Data="{StaticResource VolumeDownGeometry}" Width="18" Height="18" Foreground="White"/>
+						</Button>
+						<Button Click="OnVolumeUpKey"
+								Width="48"
+								Height="32"
+								Background="{StaticResource ButtonGradient}"
+								Foreground="White"
+								CornerRadius="5"
+								BorderBrush="#6A6A74"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="Volume Up">
+							<PathIcon Data="{StaticResource VolumeUpGeometry}" Width="18" Height="18" Foreground="White"/>
+						</Button>
 					</StackPanel>
 
 					<!-- Customizable Quick Launch Row -->
@@ -732,7 +770,6 @@
 													   VerticalAlignment="Center"
 													   TextWrapping="Wrap"/>
 											<Button Grid.Column="2"
-													Content="👁 Review"
 													Click="OnReviewButton1"
 													Background="{StaticResource ReviewGradient}"
 													Foreground="White"
@@ -745,9 +782,13 @@
 													HorizontalContentAlignment="Center"
 													VerticalContentAlignment="Center"
 													ToolTip.Tip="Review and edit actions"
-													IsEnabled="{Binding QuickLaunchButton1HasActions}"/>
+													IsEnabled="{Binding QuickLaunchButton1HasActions}">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<PathIcon Data="{StaticResource EyeGeometry}" Width="10" Height="10" Foreground="White"/>
+													<TextBlock Text="Review" VerticalAlignment="Center"/>
+												</StackPanel>
+											</Button>
 											<Button Grid.Column="3"
-													Content="● REC"
 													Click="OnRecordButton1"
 													Background="{StaticResource RecordGradient}"
 													Foreground="White"
@@ -758,7 +799,12 @@
 													FontWeight="Bold"
 													HorizontalContentAlignment="Center"
 													VerticalContentAlignment="Center"
-													ToolTip.Tip="Record action sequence"/>
+													ToolTip.Tip="Record action sequence">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<PathIcon Data="{StaticResource RecordGeometry}" Width="10" Height="10" Foreground="White"/>
+													<TextBlock Text="REC" VerticalAlignment="Center"/>
+												</StackPanel>
+											</Button>
 										</Grid>
 									</StackPanel>
 								</Border>
@@ -788,7 +834,6 @@
 													   VerticalAlignment="Center"
 													   TextWrapping="Wrap"/>
 											<Button Grid.Column="2"
-													Content="👁 Review"
 													Click="OnReviewButton2"
 													Background="{StaticResource ReviewGradient}"
 													Foreground="White"
@@ -801,9 +846,13 @@
 													HorizontalContentAlignment="Center"
 													VerticalContentAlignment="Center"
 													ToolTip.Tip="Review and edit actions"
-													IsEnabled="{Binding QuickLaunchButton2HasActions}"/>
+													IsEnabled="{Binding QuickLaunchButton2HasActions}">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<PathIcon Data="{StaticResource EyeGeometry}" Width="10" Height="10" Foreground="White"/>
+													<TextBlock Text="Review" VerticalAlignment="Center"/>
+												</StackPanel>
+											</Button>
 											<Button Grid.Column="3"
-													Content="● REC"
 													Click="OnRecordButton2"
 													Background="{StaticResource RecordGradient}"
 													Foreground="White"
@@ -814,7 +863,12 @@
 													FontWeight="Bold"
 													HorizontalContentAlignment="Center"
 													VerticalContentAlignment="Center"
-													ToolTip.Tip="Record action sequence"/>
+													ToolTip.Tip="Record action sequence">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<PathIcon Data="{StaticResource RecordGeometry}" Width="10" Height="10" Foreground="White"/>
+													<TextBlock Text="REC" VerticalAlignment="Center"/>
+												</StackPanel>
+											</Button>
 										</Grid>
 									</StackPanel>
 								</Border>
@@ -844,7 +898,6 @@
 													   VerticalAlignment="Center"
 													   TextWrapping="Wrap"/>
 											<Button Grid.Column="2"
-													Content="👁 Review"
 													Click="OnReviewButton3"
 													Background="{StaticResource ReviewGradient}"
 													Foreground="White"
@@ -857,9 +910,13 @@
 													HorizontalContentAlignment="Center"
 													VerticalContentAlignment="Center"
 													ToolTip.Tip="Review and edit actions"
-													IsEnabled="{Binding QuickLaunchButton3HasActions}"/>
+													IsEnabled="{Binding QuickLaunchButton3HasActions}">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<PathIcon Data="{StaticResource EyeGeometry}" Width="10" Height="10" Foreground="White"/>
+													<TextBlock Text="Review" VerticalAlignment="Center"/>
+												</StackPanel>
+											</Button>
 											<Button Grid.Column="3"
-													Content="● REC"
 													Click="OnRecordButton3"
 													Background="{StaticResource RecordGradient}"
 													Foreground="White"
@@ -870,7 +927,12 @@
 													FontWeight="Bold"
 													HorizontalContentAlignment="Center"
 													VerticalContentAlignment="Center"
-													ToolTip.Tip="Record action sequence"/>
+													ToolTip.Tip="Record action sequence">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<PathIcon Data="{StaticResource RecordGeometry}" Width="10" Height="10" Foreground="White"/>
+													<TextBlock Text="REC" VerticalAlignment="Center"/>
+												</StackPanel>
+											</Button>
 										</Grid>
 									</StackPanel>
 								</Border>
@@ -900,7 +962,6 @@
 													   VerticalAlignment="Center"
 													   TextWrapping="Wrap"/>
 											<Button Grid.Column="2"
-													Content="👁 Review"
 													Click="OnReviewButton4"
 													Background="{StaticResource ReviewGradient}"
 													Foreground="White"
@@ -913,9 +974,13 @@
 													HorizontalContentAlignment="Center"
 													VerticalContentAlignment="Center"
 													ToolTip.Tip="Review and edit actions"
-													IsEnabled="{Binding QuickLaunchButton4HasActions}"/>
+													IsEnabled="{Binding QuickLaunchButton4HasActions}">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<PathIcon Data="{StaticResource EyeGeometry}" Width="10" Height="10" Foreground="White"/>
+													<TextBlock Text="Review" VerticalAlignment="Center"/>
+												</StackPanel>
+											</Button>
 											<Button Grid.Column="3"
-													Content="● REC"
 													Click="OnRecordButton4"
 													Background="{StaticResource RecordGradient}"
 													Foreground="White"
@@ -926,7 +991,12 @@
 													FontWeight="Bold"
 													HorizontalContentAlignment="Center"
 													VerticalContentAlignment="Center"
-													ToolTip.Tip="Record action sequence"/>
+													ToolTip.Tip="Record action sequence">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<PathIcon Data="{StaticResource RecordGeometry}" Width="10" Height="10" Foreground="White"/>
+													<TextBlock Text="REC" VerticalAlignment="Center"/>
+												</StackPanel>
+											</Button>
 										</Grid>
 									</StackPanel>
 								</Border>
@@ -945,7 +1015,8 @@
 									Padding="20,8"
 									FontSize="12"
 									HorizontalContentAlignment="Center"
-									VerticalContentAlignment="Center"/>
+									VerticalContentAlignment="Center"
+									ToolTip.Tip="Save configuration and return"/>
 							<Button Content="Cancel"
 									Click="OnCancelQuickLaunchConfig"
 									Background="#D9534F"
@@ -956,7 +1027,8 @@
 									Padding="20,8"
 									FontSize="12"
 									HorizontalContentAlignment="Center"
-									VerticalContentAlignment="Center"/>
+									VerticalContentAlignment="Center"
+									ToolTip.Tip="Discard changes"/>
 						</StackPanel>
 					</StackPanel>
 				</Grid>

@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.IO;
 using Avalonia.Media.Imaging;
+using System.Diagnostics;
+using static RRemote.Roku.RokuClient;
 
 namespace RokuRemoteAvalonia
 {
@@ -64,6 +66,9 @@ namespace RokuRemoteAvalonia
         private bool _keyboardEnabled = false;
         private RokuKeyboard? _directKeyboard;
 
+        // Cross-platform mic capture + WebSocket streamer
+        private readonly RRemote.Roku.VoiceStreamer _voiceStreamer = new();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -72,6 +77,20 @@ namespace RokuRemoteAvalonia
             _filteredDeviceApps = new ObservableCollection<RokuApp>();
             _statusMessage = "Click 'Discover Devices' to find Roku devices on your network";
             DataContext = this;
+
+            // Button consumes PointerPressed/Released for its own Click logic, so we must
+            // subscribe with handledEventsToo:true to receive them for hold-to-talk.
+            MicButton.AddHandler(
+                Avalonia.Input.InputElement.PointerPressedEvent,
+                OnMicrophonePressed,
+                Avalonia.Interactivity.RoutingStrategies.Tunnel | Avalonia.Interactivity.RoutingStrategies.Bubble,
+                handledEventsToo: true);
+
+            MicButton.AddHandler(
+                Avalonia.Input.InputElement.PointerReleasedEvent,
+                OnMicrophoneReleased,
+                Avalonia.Interactivity.RoutingStrategies.Tunnel | Avalonia.Interactivity.RoutingStrategies.Bubble,
+                handledEventsToo: true);
         }
 
         // Recording Properties
@@ -452,97 +471,97 @@ namespace RokuRemoteAvalonia
         public async void OnHomeKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Home", "", "Home");
-            await SendKey("Home");
+            await SendKey(Keys.Home);
         }
 
         public async void OnBackKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Back", "", "Back");
-            await SendKey("Back");
+            await SendKey(Keys.Back);
         }
 
         public async void OnUpKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Up", "", "Up");
-            await SendKey("Up");
+            await SendKey(Keys.Up);
         }
 
         public async void OnDownKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Down", "", "Down");
-            await SendKey("Down");
+            await SendKey(Keys.Down);
         }
 
         public async void OnLeftKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Left", "", "Left");
-            await SendKey("Left");
+            await SendKey(Keys.Left);
         }
 
         public async void OnRightKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Right", "", "Right");
-            await SendKey("Right");
+            await SendKey(Keys.Right);
         }
 
         public async void OnSelectKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Select", "", "OK");
-            await SendKey("Select");
+            await SendKey(Keys.Select);
         }
 
         public async void OnPlayPauseKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Play", "", "Play/Pause");
-            await SendKey("Play");
+            await SendKey(Keys.Play);
         }
 
         public async void OnRewindKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Rev", "", "Rewind");
-            await SendKey("Rev");
+            await SendKey(Keys.Rev);
         }
 
         public async void OnFastForwardKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Fwd", "", "Fast Forward");
-            await SendKey("Fwd");
+            await SendKey(Keys.Fwd);
         }
 
         public async void OnVolumeUpKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "VolumeUp", "", "Volume Up");
-            await SendKey("VolumeUp");
+            await SendKey(Keys.VolumeUp);
         }
 
         public async void OnVolumeDownKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "VolumeDown", "", "Volume Down");
-            await SendKey("VolumeDown");
+            await SendKey(Keys.VolumeDown);
         }
 
         public async void OnMuteKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "VolumeMute", "", "Mute");
-            await SendKey("VolumeMute");
+            await SendKey(Keys.VolumeMute);
         }
 
         public async void OnPowerKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Power", "", "Power");
-            await SendKey("Power");
+            await SendKey(Keys.Power);
         }
 
         public async void OnStarKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Info", "", "Info/Star");
-            await SendKey("Info");
+            await SendKey(Keys.Info);
         }
 
         public async void OnOptionsKey(object? sender, RoutedEventArgs e)
         {
             RecordAction(ActionType.KeyPress, "Info", "", "Options");
-            await SendKey("Info");
+            await SendKey(Keys.Info);
         }
 
         // Quick Launch Button Event Handlers - Updated to use sequences
@@ -1234,5 +1253,57 @@ namespace RokuRemoteAvalonia
 
             await DialogHost.Show(reviewDialog, "MainDialogHost");
         }
+
+        // Mic button DOWN -> open socket + start streaming
+        private async void OnMicrophonePressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            if (SelectedDevice?.Endpoint is null)
+            {
+                StatusMessage = "No device selected";
+                return;
+            }
+
+            try
+            {
+                var endpoint = SelectedDevice.Endpoint;
+                var host = new Uri(endpoint).Host;
+                var wsUri = new Uri($"ws://{host}:8000");
+
+                // 1) Send Search keypress FIRST so the TV opens the audio stream port
+                StatusMessage = "Enabling voice mode...";
+                bool ok = await RRemote.Roku.RokuClient.StartVoiceSearch(endpoint);
+                if (!ok)
+                {
+                    StatusMessage = "Roku did not accept the Search command";
+                    return;
+                }
+
+                // 2) Only now look for the audio stream port and start streaming
+                StatusMessage = "🎤 Listening...";
+                await _voiceStreamer.StartAsync(wsUri);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Voice error: {ex.Message}";
+                System.Diagnostics.Debug.Write(StatusMessage);
+            }
+        }
+
+        // Mic button UP -> stop streaming + close socket
+        private async void OnMicrophoneReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
+        {
+            try
+            {
+                await _voiceStreamer.StopAsync();
+                StatusMessage = "Voice transmission ended";
+                Debug.Write(StatusMessage);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Voice error: {ex.Message}";
+                Debug.Write(StatusMessage);
+            }
+        }
+        
     }
 }

@@ -1,0 +1,19 @@
+﻿For the microphone feature to work the native OpenAL library binary 
+(openal32.dll, libopenal.so, or libopenal.dylib) required by OpenTK.
+
+For Windows:
+Download the OpenAL Windows Installer from the official OpenAL 
+website and run it on your machine.
+
+Alternatively, find openal32.dll (often bundled in OpenTK NuGet
+core packages or available via the OpenAL Soft project) and copy
+it directly into your project's output directory 
+	
+For Linux:
+Install the native package via your package manager. 
+	
+Ubuntu/Debian, run:sudo apt-get install libopenal-dev
+	
+macOS:Install OpenAL via Homebrew by running:
+	brew install openal-soft
+	

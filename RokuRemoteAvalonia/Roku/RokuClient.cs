@@ -516,6 +516,13 @@ namespace RRemote.Roku
             }
         }
 
+        // Puts the Roku into voice/search mode. This MUST be sent to the TV BEFORE
+        // connecting to the audio stream port, otherwise the mic port will not be open.
+        public static Task<bool> StartVoiceSearch(string endpoint)
+        {
+            return PressKey(endpoint, Keys.Search);
+        }
+
         public static NetworkInterface[] GetUsableNics()
         {
             try

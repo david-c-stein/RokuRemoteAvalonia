@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using DialogHostAvalonia;
 using RokuRemoteAvalonia.Controls;
@@ -61,6 +62,19 @@ namespace RokuRemoteAvalonia
         private bool _showInstalledApps = true;
         private bool _showQuickLaunchConfig = false;
         private bool _showKeyboard = false;
+
+        // Remote-only mode: hides everything except the remote control panel
+        private bool _isRemoteOnlyMode = false;
+        private double _savedWidth;
+        private double _savedHeight;
+        private bool _savedCanResize;
+        private WindowDecorations _savedWindowDecorations;
+        private Avalonia.Media.IBrush? _savedBackground;
+        private IReadOnlyList<WindowTransparencyLevel>? _savedTransparencyLevelHint;
+        private Thickness _savedRootGridMargin;
+        private Thickness _savedContentGridMargin;
+        private GridLength _savedSpacerColumnWidth;
+        private GridLength _savedAppsColumnWidth;
 
         // Keyboard mode
         private bool _keyboardEnabled = false;
@@ -248,6 +262,20 @@ namespace RokuRemoteAvalonia
                 OnPropertyChanged(nameof(ShowKeyboard));
             }
         }
+
+        public bool IsRemoteOnlyMode
+        {
+            get => _isRemoteOnlyMode;
+            set
+            {
+                _isRemoteOnlyMode = value;
+                OnPropertyChanged(nameof(IsRemoteOnlyMode));
+                OnPropertyChanged(nameof(RemoteOnlyToggleTooltip));
+            }
+        }
+
+        public string RemoteOnlyToggleTooltip =>
+            IsRemoteOnlyMode ? "Show Full UI" : "Show Remote Only";
 
         // Quick Launch Button Properties
         public string QuickLaunchButton1Text
@@ -700,6 +728,73 @@ namespace RokuRemoteAvalonia
             StatusMessage = KeyboardEnabled 
                 ? "Keyboard mode enabled - keypresses will be sent to TV" 
                 : "Keyboard mode disabled";
+        }
+
+        public void OnToggleRemoteOnlyMode(object? sender, RoutedEventArgs e)
+        {
+            IsRemoteOnlyMode = !IsRemoteOnlyMode;
+            ApplyRemoteOnlyMode(IsRemoteOnlyMode);
+            StatusMessage = IsRemoteOnlyMode
+                ? "Remote-only view - showing just the remote control"
+                : "Full view restored";
+        }
+
+        // Lets the user reposition the window by dragging the ROKU logo, since the
+        // window has no title bar while in remote-only (frameless) mode.
+        public void OnRemoteDragHandlePressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            if (IsRemoteOnlyMode && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                BeginMoveDrag(e);
+            }
+        }
+
+        // Strips the window down to a frameless, transparent shell containing only the
+        // remote panel, or restores the previously saved full-window chrome and layout.
+        private void ApplyRemoteOnlyMode(bool enable)
+        {
+            if (enable)
+            {
+                _savedWidth = Width;
+                _savedHeight = Height;
+                _savedCanResize = CanResize;
+                _savedWindowDecorations = WindowDecorations;
+                _savedBackground = Background;
+                _savedTransparencyLevelHint = TransparencyLevelHint;
+                _savedRootGridMargin = RootGrid.Margin;
+                _savedContentGridMargin = ContentGrid.Margin;
+                _savedSpacerColumnWidth = ContentGrid.ColumnDefinitions[1].Width;
+                _savedAppsColumnWidth = ContentGrid.ColumnDefinitions[2].Width;
+
+                RootGrid.Margin = new Thickness(0);
+                ContentGrid.Margin = new Thickness(0);
+                ContentGrid.ColumnDefinitions[1].Width = new GridLength(0);
+                ContentGrid.ColumnDefinitions[2].Width = new GridLength(0);
+                ContentGrid.ColumnDefinitions[0].Width = GridLength.Auto;
+
+                Background = Avalonia.Media.Brushes.Transparent;
+                TransparencyLevelHint = new[] { WindowTransparencyLevel.Transparent };
+                WindowDecorations = WindowDecorations.None;
+                CanResize = false;
+                SizeToContent = SizeToContent.WidthAndHeight;
+            }
+            else
+            {
+                SizeToContent = SizeToContent.Manual;
+                WindowDecorations = _savedWindowDecorations;
+                Background = _savedBackground;
+                TransparencyLevelHint = _savedTransparencyLevelHint ?? Array.Empty<WindowTransparencyLevel>();
+                CanResize = _savedCanResize;
+
+                RootGrid.Margin = _savedRootGridMargin;
+                ContentGrid.Margin = _savedContentGridMargin;
+                ContentGrid.ColumnDefinitions[1].Width = _savedSpacerColumnWidth;
+                ContentGrid.ColumnDefinitions[2].Width = _savedAppsColumnWidth;
+                ContentGrid.ColumnDefinitions[0].Width = new GridLength(350);
+
+                Width = _savedWidth;
+                Height = _savedHeight;
+            }
         }
 
         // Info Button Click Handler - NEW

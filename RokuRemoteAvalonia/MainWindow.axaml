@@ -9,8 +9,8 @@
         x:Class="RokuRemoteAvalonia.MainWindow"
         x:DataType="vm:MainWindow"
         Title="Roku Remote Control - Avalonia"
-        MinWidth="900" MinHeight="850"
-		Width="900" Height="850">
+        MinWidth="750" MinHeight="850"
+		Width="750" Height="850">
 
 	<Window.Resources>
 		<!-- Remote Control Gradient Background -->
@@ -94,11 +94,36 @@
 		<StreamGeometry x:Key="VolumeUpGeometry">M3,9v6h4l5,5V4L7,9H3zm13.5,3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-0.73 2.5-2.25 2.5-4.02zM14,3.23v2.06c2.89,0.86 5,3.54 5,6.71s-2.11,5.85-5,6.71v2.06c4.01-0.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z</StreamGeometry>
 	</Window.Resources>
 
+<Window.Styles>
+	<!-- Raised 3D look for all remote buttons -->
+	<Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Transitions">
+			<Transitions>
+				<BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.08"/>
+			</Transitions>
+		</Setter>
+		<Setter Property="BoxShadow" Value="0 3 5 0 #66000000, inset 0 1 1 0 #55FFFFFF, inset 0 -2 3 0 #40000000"/>
+	</Style>
+
+	<!-- Hover: slightly lift -->
+	<Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="BoxShadow" Value="0 5 8 0 #77000000, inset 0 1 1 0 #66FFFFFF, inset 0 -2 3 0 #40000000"/>
+	</Style>
+
+	<!-- Pressed: sink the button in -->
+	<Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="BoxShadow" Value="inset 0 2 4 0 #90000000"/>
+	</Style>
+	<Style Selector="Button:pressed">
+		<Setter Property="RenderTransform" Value="translateY(1px)"/>
+	</Style>
+</Window.Styles>
+
 	<dialogHostAvalonia:DialogHost Identifier="MainDialogHost"
 									DialogMargin="16"
 									dialogHostAvalonia:DialogHostStyle.CornerRadius="8">	
 	
-	<Grid Margin="20">
+	<Grid Name="RootGrid" Margin="20">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
@@ -106,7 +131,8 @@
 		</Grid.RowDefinitions>
 
 		<!-- Header Section -->
-		<StackPanel Grid.Row="0" Orientation="Vertical" Spacing="10">
+		<StackPanel Grid.Row="0" Orientation="Vertical" Spacing="10"
+					IsVisible="{Binding !IsRemoteOnlyMode}">
 			<TextBlock Text="Roku Remote Control" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
 
 			<!-- Device Discovery -->
@@ -133,7 +159,7 @@
 		</StackPanel>
 
 		<!-- Main Content -->
-		<Grid Grid.Row="1" Margin="0,20,0,0">
+		<Grid Name="ContentGrid" Grid.Row="1" Margin="0,20,0,0">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="350"/>
 				<ColumnDefinition Width="20"/>
@@ -141,28 +167,36 @@
 			</Grid.ColumnDefinitions>
 
 			<!-- Roku Remote Panel - Enhanced to look like actual remote -->
-			<Border Grid.Column="0"
-					Background="{StaticResource RemoteGradient}"
-					CornerRadius="15,15,25,25"
-					Padding="20,30,20,40"
-					IsEnabled="{Binding IsConnected}"
-					BorderBrush="#303040"
-					BorderThickness="1"
-					Width="240"
-					Height="620"
-					VerticalAlignment="Top">
-				<Border.Effect>
-					<DropShadowEffect Color="Black" BlurRadius="10" OffsetX="3" OffsetY="3" Opacity="0.4"/>
-				</Border.Effect>
+<Grid Grid.Column="0" Width="240" Height="632" VerticalAlignment="Top">
 
-				<StackPanel Spacing="12" HorizontalAlignment="Center">
+	<!-- Body edge / side-wall: darker layer offset down to simulate physical thickness -->
+	<Border CornerRadius="15,15,27,27"
+			Background="#0C0C12"
+			Margin="0,10,0,0"
+			BoxShadow="0 24 55 0 #C0000000, 0 6 12 0 #80000000"/>
 
-					<!-- ROKU Logo Area -->
-					<Border Background="#662D91"
+	<!-- Front face of the remote -->
+	<Border Background="{StaticResource RemoteGradient}"
+			CornerRadius="15,15,25,25"
+			Padding="20,30,20,40"
+			IsEnabled="{Binding IsConnected}"
+			BorderBrush="#3A3A4A"
+			BorderThickness="1"
+			Width="240"
+			Height="620"
+			VerticalAlignment="Top"
+			BoxShadow="0 22 50 0 #C0000000, 0 6 12 0 #70000000, inset 0 2 2 0 #4DFFFFFF, inset 0 -5 14 0 #66000000, inset 7 0 16 0 #40000000, inset -7 0 16 0 #40000000">
+
+	<StackPanel Spacing="12" HorizontalAlignment="Center">
+
+					<!-- ROKU Logo Area (also acts as a drag handle when the window is frameless) -->
+					<Border Name="RemoteDragHandle"
+							Background="#662D91"
 							CornerRadius="12"
 							Padding="15,6"
 							HorizontalAlignment="Center"
-							Margin="0,5,0,10">
+							Margin="0,5,0,10"
+							PointerPressed="OnRemoteDragHandlePressed">
 						<TextBlock Text="ROKU"
 								   FontSize="16"
 								   FontWeight="Bold"
@@ -189,7 +223,7 @@
 					</Border>
 
 					<!-- Top Function Buttons Row -->
-					<StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center" Margin="0,5,0,10">
+					<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" Margin="0,5,0,10">
 						<!-- Search Button -->
 						<Button Click="OnSearchClick"
 								Width="35"
@@ -257,6 +291,24 @@
 								VerticalContentAlignment="Center"
 								ToolTip.Tip="Settings">
 							<PathIcon Data="{StaticResource SettingsGeometry}" Width="16" Height="16" Foreground="White"/>
+							<Button.Effect>
+								<DropShadowEffect Color="#4169E1" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
+							</Button.Effect>
+						</Button>
+
+						<!-- Remote-Only View Toggle Button -->
+						<Button Click="OnToggleRemoteOnlyMode"
+								Width="35"
+								Height="30"
+								Background="{StaticResource FunctionButtonGradient}"
+								Foreground="White"
+								CornerRadius="8"
+								BorderBrush="#5A7FE1"
+								BorderThickness="1"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								ToolTip.Tip="{Binding RemoteOnlyToggleTooltip}">
+							<PathIcon Data="{StaticResource EyeGeometry}" Width="16" Height="16" Foreground="White"/>
 							<Button.Effect>
 								<DropShadowEffect Color="#4169E1" BlurRadius="4" OffsetX="0" OffsetY="0" Opacity="0.2"/>
 							</Button.Effect>
@@ -666,6 +718,7 @@
 
 				</StackPanel>
 			</Border>
+		</Grid>
 
 			<!-- Apps Panel -->
 			<Border Grid.Column="2"
@@ -673,7 +726,8 @@
 					BorderThickness="1"
 					CornerRadius="10"
 					Padding="15"
-					IsEnabled="{Binding IsConnected}">
+					IsEnabled="{Binding IsConnected}"
+					IsVisible="{Binding !IsRemoteOnlyMode}">
 				
 				<!-- Single Grid container to hold both views -->
 				<Grid>
@@ -1103,6 +1157,6 @@
 				</StackPanel>
 			</Border>
 		</Border>
-	</Grid>
+		</Grid>
 	</dialogHostAvalonia:DialogHost>
 </Window>

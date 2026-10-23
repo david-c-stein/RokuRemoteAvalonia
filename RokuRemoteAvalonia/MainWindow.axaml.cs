@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media.Imaging;
 using DialogHostAvalonia;
 using RokuRemoteAvalonia.Controls;
 using RokuRemoteAvalonia.Models;
@@ -9,12 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System.IO;
-using Avalonia.Media.Imaging;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using static RRemote.Roku.RokuClient;
 
 namespace RokuRemoteAvalonia
@@ -67,9 +67,12 @@ namespace RokuRemoteAvalonia
         private bool _isRemoteOnlyMode = false;
         private double _savedWidth;
         private double _savedHeight;
+        private double _savedMinWidth;
+        private double _savedMinHeight;
         private bool _savedCanResize;
         private WindowDecorations _savedWindowDecorations;
         private Avalonia.Media.IBrush? _savedBackground;
+        private Avalonia.Media.IBrush? _savedHostBackground;
         private IReadOnlyList<WindowTransparencyLevel>? _savedTransparencyLevelHint;
         private Thickness _savedRootGridMargin;
         private Thickness _savedContentGridMargin;
@@ -757,9 +760,12 @@ namespace RokuRemoteAvalonia
             {
                 _savedWidth = Width;
                 _savedHeight = Height;
+                _savedMinWidth = MinWidth;
+                _savedMinHeight = MinHeight;
                 _savedCanResize = CanResize;
                 _savedWindowDecorations = WindowDecorations;
                 _savedBackground = Background;
+                _savedHostBackground = MainHost.Background;
                 _savedTransparencyLevelHint = TransparencyLevelHint;
                 _savedRootGridMargin = RootGrid.Margin;
                 _savedContentGridMargin = ContentGrid.Margin;
@@ -772,10 +778,19 @@ namespace RokuRemoteAvalonia
                 ContentGrid.ColumnDefinitions[2].Width = new GridLength(0);
                 ContentGrid.ColumnDefinitions[0].Width = GridLength.Auto;
 
-                Background = Avalonia.Media.Brushes.Transparent;
+                // null (not Transparent) => the area is not hit-testable, so clicks
+                // fall through to whatever is behind the window.
+                Background = null;
+                MainHost.Background = null;
+
                 TransparencyLevelHint = new[] { WindowTransparencyLevel.Transparent };
                 WindowDecorations = WindowDecorations.None;
                 CanResize = false;
+
+                // Must drop the min-size *before* SizeToContent, otherwise the window
+                // is pinned at 750x850 and the empty region remains part of the window.
+                MinWidth = 0;
+                MinHeight = 0;
                 SizeToContent = SizeToContent.WidthAndHeight;
             }
             else
@@ -783,6 +798,7 @@ namespace RokuRemoteAvalonia
                 SizeToContent = SizeToContent.Manual;
                 WindowDecorations = _savedWindowDecorations;
                 Background = _savedBackground;
+                MainHost.Background = _savedHostBackground;
                 TransparencyLevelHint = _savedTransparencyLevelHint ?? Array.Empty<WindowTransparencyLevel>();
                 CanResize = _savedCanResize;
 
@@ -792,6 +808,9 @@ namespace RokuRemoteAvalonia
                 ContentGrid.ColumnDefinitions[2].Width = _savedAppsColumnWidth;
                 ContentGrid.ColumnDefinitions[0].Width = new GridLength(350);
 
+                // Restore min-size first so the explicit Width/Height are not clamped.
+                MinWidth = _savedMinWidth;
+                MinHeight = _savedMinHeight;
                 Width = _savedWidth;
                 Height = _savedHeight;
             }

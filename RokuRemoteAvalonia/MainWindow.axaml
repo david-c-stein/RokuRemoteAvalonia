@@ -4,13 +4,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:RokuRemoteAvalonia"
         xmlns:roku="using:RRemote.Roku"
-		xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+        xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
         mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="850"
         x:Class="RokuRemoteAvalonia.MainWindow"
         x:DataType="vm:MainWindow"
         Title="Roku Remote Control - Avalonia"
+        Icon="avares://RokuRemoteAvalonia/Assets/roku-remote.ico"
         MinWidth="750" MinHeight="850"
-		Width="750" Height="850">
+        Width="750" Height="850">
 
 	<Window.Resources>
 		<!-- Remote Control Gradient Background -->
@@ -117,11 +118,30 @@
 	<Style Selector="Button:pressed">
 		<Setter Property="RenderTransform" Value="translateY(1px)"/>
 	</Style>
+
+	<!-- Quick Launch buttons: force white text in all visual states -->
+	<Style Selector="Button#QuickLaunchConfigure, Button#QuickLaunch1, Button#QuickLaunch2, Button#QuickLaunch3, Button#QuickLaunch4">
+		<Setter Property="Foreground" Value="White"/>
+	</Style>
+	<Style Selector="Button#QuickLaunchConfigure /template/ ContentPresenter, Button#QuickLaunch1 /template/ ContentPresenter, Button#QuickLaunch2 /template/ ContentPresenter, Button#QuickLaunch3 /template/ ContentPresenter, Button#QuickLaunch4 /template/ ContentPresenter">
+		<Setter Property="Foreground" Value="White"/>
+	</Style>
+	<Style Selector="Button#QuickLaunchConfigure:p1:pointerover /template/ ContentPresenter, Button#QuickLaunch2:pointerover /template/ ContentPresenter, Button#QuickLaunch3:pointerover /template/ ContentPresenter, Button#QuickLaunch4:pointerover /template/ ContentPresenter">
+		<Setter Property="Foreground" Value="White"/>
+	</Style>
+	<Style Selector="Button#QuickLaunchConfigure:pressed /template/ ContentPresenter, Button#QuickLaunch1:pressed /template/ ContentPresenter, Button#QuickLaunch2:pressed /template/ ContentPresenter, Button#QuickLaunch3:pressed /template/ ContentPresenter, Button#QuickLaunch4:pressed /template/ ContentPresenter">
+		<Setter Property="Foreground" Value="White"/>
+	</Style>
+	<Style Selector="Button#QuickLaunchConfigure:disabled /template/ ContentPresenter, Button#QuickLaunch1:disabled /template/ ContentPresenter, Button#QuickLaunch2:disabled /template/ ContentPresenter, Button#QuickLaunch3:disabled /template/ ContentPresenter, Button#QuickLaunch4:disabled /template/ ContentPresenter">
+		<Setter Property="Foreground" Value="White"/>
+	</Style>
 </Window.Styles>
 
-	<dialogHostAvalonia:DialogHost Identifier="MainDialogHost"
-									DialogMargin="16"
-									dialogHostAvalonia:DialogHostStyle.CornerRadius="8">	
+<dialogHostAvalonia:DialogHost 
+	Name="MainHost"
+	Identifier="MainDialogHost"
+	DialogMargin="16"
+	dialogHostAvalonia:DialogHostStyle.CornerRadius="8">	
 	
 	<Grid Name="RootGrid" Margin="20">
 		<Grid.RowDefinitions>
@@ -168,13 +188,7 @@
 
 			<!-- Roku Remote Panel - Enhanced to look like actual remote -->
 <Grid Grid.Column="0" Width="240" Height="632" VerticalAlignment="Top">
-
-	<!-- Body edge / side-wall: darker layer offset down to simulate physical thickness -->
-	<Border CornerRadius="15,15,27,27"
-			Background="#0C0C12"
-			Margin="0,10,0,0"
-			BoxShadow="0 24 55 0 #C0000000, 0 6 12 0 #80000000"/>
-
+	
 	<!-- Front face of the remote -->
 	<Border Background="{StaticResource RemoteGradient}"
 			CornerRadius="15,15,25,25"
@@ -187,15 +201,108 @@
 			VerticalAlignment="Top"
 			BoxShadow="0 22 50 0 #C0000000, 0 6 12 0 #70000000, inset 0 2 2 0 #4DFFFFFF, inset 0 -5 14 0 #66000000, inset 7 0 16 0 #40000000, inset -7 0 16 0 #40000000">
 
-	<StackPanel Spacing="12" HorizontalAlignment="Center">
+	<DockPanel LastChildFill="True">
 
+		<!-- Customizable Quick Launch Row - pinned to the bottom of the remote body -->
+		<StackPanel DockPanel.Dock="Bottom"
+					Orientation="Vertical"
+					Spacing="5"
+					HorizontalAlignment="Center"
+					Margin="0,0,0,0">
+
+			<!-- Quick Launch Buttons Row -->
+			<StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+				<Button Name="QuickLaunchConfigure"
+						Content="⚙"
+						Click="OnConfigureQuickLaunch"
+						Width="16"
+						Height="28"
+						Padding="0"
+						FontSize="9"
+						Background="#444444"
+						Foreground="White"
+						BorderBrush="#666666"
+						BorderThickness="1"
+						CornerRadius="3"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						ToolTip.Tip="Quick Launch"/>
+
+				<Button Name="QuickLaunch1"
+						Content="{Binding QuickLaunchButton1Text}"
+						Click="OnQuickLaunch1"
+						Width="30"
+						Height="28"
+						FontSize="9"
+						FontWeight="Bold"
+						Background="{StaticResource QuickLaunchGradient}"
+						Foreground="White"
+						CornerRadius="3"
+						BorderBrush="#FF9C52"
+						BorderThickness="1"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						ToolTip.Tip="{Binding QuickLaunchButton1Tooltip}"/>
+
+				<Button Name="QuickLaunch2"
+						Content="{Binding QuickLaunchButton2Text}"
+						Click="OnQuickLaunch2"
+						Width="30"
+						Height="28"
+						FontSize="9"
+						FontWeight="Bold"
+						Background="{StaticResource QuickLaunchGradient}"
+						Foreground="White"
+						CornerRadius="3"
+						BorderBrush="#FF9C52"
+						BorderThickness="1"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						ToolTip.Tip="{Binding QuickLaunchButton2Tooltip}"/>
+
+				<Button Name="QuickLaunch3"
+						Content="{Binding QuickLaunchButton3Text}"
+						Click="OnQuickLaunch3"
+						Width="30"
+						Height="28"
+						FontSize="9"
+						FontWeight="Bold"
+						Background="{StaticResource QuickLaunchGradient}"
+						Foreground="White"
+						CornerRadius="3"
+						BorderBrush="#FF9C52"
+						BorderThickness="1"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						ToolTip.Tip="{Binding QuickLaunchButton3Tooltip}"/>
+
+				<Button Name="QuickLaunch4"
+						Content="{Binding QuickLaunchButton4Text}"
+						Click="OnQuickLaunch4"
+						Width="30"
+						Height="28"
+						FontSize="9"
+						FontWeight="Bold"
+						Background="{StaticResource QuickLaunchGradient}"
+						Foreground="White"
+						CornerRadius="3"
+						BorderBrush="#FF9C52"
+						BorderThickness="1"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						ToolTip.Tip="{Binding QuickLaunchButton4Tooltip}"/>
+			</StackPanel>
+		</StackPanel>
+
+		<!-- Remaining remote controls fill the space above -->
+		<StackPanel Spacing="6" HorizontalAlignment="Center" VerticalAlignment="Top">
 					<!-- ROKU Logo Area (also acts as a drag handle when the window is frameless) -->
 					<Border Name="RemoteDragHandle"
 							Background="#662D91"
 							CornerRadius="12"
 							Padding="15,6"
 							HorizontalAlignment="Center"
-							Margin="0,5,0,10"
+							Margin="0,0,0,4"
 							PointerPressed="OnRemoteDragHandlePressed">
 						<TextBlock Text="ROKU"
 								   FontSize="16"
@@ -211,7 +318,7 @@
 							Padding="10,5"
 							IsVisible="{Binding IsRecording}"
 							HorizontalAlignment="Center"
-							Margin="0,0,0,5">
+							Margin="0,0,0,2">
 						<StackPanel Orientation="Horizontal" Spacing="5">
 							<PathIcon Data="{StaticResource RecordGeometry}" Width="14" Height="14" Foreground="White"/>
 							<TextBlock Text="{Binding RecordingStatusText}" 
@@ -223,8 +330,7 @@
 					</Border>
 
 					<!-- Top Function Buttons Row -->
-					<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" Margin="0,5,0,10">
-						<!-- Search Button -->
+					<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" Margin="0,0,0,4">						<!-- Search Button -->
 						<Button Click="OnSearchClick"
 								Width="35"
 								Height="30"
@@ -326,7 +432,7 @@
 							HorizontalAlignment="Center"
 							HorizontalContentAlignment="Center"
 							VerticalContentAlignment="Center"
-							Margin="0,0,0,12"
+							Margin="0,0,0,4"
 							BorderBrush="#FF6B7A"
 							BorderThickness="1"
 							ToolTip.Tip="Power On/Off">
@@ -337,7 +443,7 @@
 					</Button>
 
 					<!-- Back and Home Row -->
-					<StackPanel Orientation="Horizontal" Spacing="40" HorizontalAlignment="Center" Margin="0,0,0,12">
+					<StackPanel Orientation="Horizontal" Spacing="40" HorizontalAlignment="Center" Margin="0,0,0,4">					
 						<Button Click="OnBackKey"
 								Width="40"
 								Height="32"
@@ -367,8 +473,7 @@
 					</StackPanel>
 
 					<!-- D-Pad Navigation -->
-					<Grid Width="140" Height="140" HorizontalAlignment="Center" Margin="0,5,0,8">
-						<!-- D-Pad Background Circle -->
+					<Grid Width="140" Height="140" HorizontalAlignment="Center" Margin="0,0,0,4">						<!-- D-Pad Background Circle -->
 						<Ellipse Fill="#3A3A44" 
 								 Stroke="#2A2A34"
 								 StrokeThickness="1"
@@ -416,7 +521,7 @@
 									HorizontalContentAlignment="Center"
 									VerticalContentAlignment="Center"
 									HorizontalAlignment="Right"
-									Margin="0,0,5,0"
+									Margin="0,0,6,0"
 									ToolTip.Tip="Left">
 								<PathIcon Data="{StaticResource LeftGeometry}" Width="18" Height="18" Foreground="White"/>
 							</Button>
@@ -461,7 +566,7 @@
 									HorizontalContentAlignment="Center"
 									VerticalContentAlignment="Center"
 									HorizontalAlignment="Right"
-									Margin="0,0,6,0"
+									Margin="0,0,7,0"
 									ToolTip.Tip="Right">
 								<PathIcon Data="{StaticResource RightGeometry}" Width="18" Height="18" Foreground="White"/>
 							</Button>
@@ -478,7 +583,7 @@
 									BorderThickness="1"
 									HorizontalContentAlignment="Center"
 									VerticalContentAlignment="Center"
-									Margin="0,0,2,0"
+									Margin="0,0,3,0"
 									ToolTip.Tip="Down">
 								<PathIcon Data="{StaticResource DownGeometry}" Width="18" Height="18" Foreground="White"/>
 							</Button>
@@ -578,7 +683,7 @@
 					</StackPanel>
 
 					<!-- Volume Controls -->
-					<StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,0,0,12">
+					<StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,0,0,0">
 												<Button Click="OnMuteKey"
 									Width="45"
 									Height="32"
@@ -620,114 +725,19 @@
 						</Button>
 					</StackPanel>
 
-					<!-- Customizable Quick Launch Row -->
-					<StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center" Margin="0,8,0,0">
-						<!-- Quick Launch Label and Configure Button -->
-						<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
-							<TextBlock Text="Quick Launch"
-									   FontSize="8"
-									   Foreground="#CCCCCC"
-									   VerticalAlignment="Center"/>
-							<Button Content="⚙"
-									Click="OnConfigureQuickLaunch"
-									Background="#444444"
-									Foreground="White"
-									BorderBrush="#666666"
-									BorderThickness="1"
-									CornerRadius="4"
-									Padding="8,4"
-									Width="20"
-									Height="20"
-									FontSize="8"
-									HorizontalContentAlignment="Center"
-									VerticalContentAlignment="Center"
-									ToolTip.Tip="Configure Quick Launch Buttons"/>
-						</StackPanel>
-
-						<!-- Quick Launch Buttons Row -->
-						<StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
-							<Button Name="QuickLaunch1"
-									Content="{Binding QuickLaunchButton1Text}"
-									Click="OnQuickLaunch1"
-									Width="42"
-									Height="28"
-									FontSize="9"
-									FontWeight="Bold"
-									Background="{StaticResource QuickLaunchGradient}"
-									Foreground="White"
-									CornerRadius="3"
-									BorderBrush="#FF9C52"
-									BorderThickness="1"
-									HorizontalContentAlignment="Center"
-									VerticalContentAlignment="Center"
-									IsVisible="{Binding QuickLaunchButton1Visible}"
-									ToolTip.Tip="{Binding QuickLaunchButton1Tooltip}"/>
-
-							<Button Name="QuickLaunch2"
-									Content="{Binding QuickLaunchButton2Text}"
-									Click="OnQuickLaunch2"
-									Width="42"
-									Height="28"
-									FontSize="9"
-									FontWeight="Bold"
-									Background="{StaticResource QuickLaunchGradient}"
-									Foreground="White"
-									CornerRadius="3"
-									BorderBrush="#FF9C52"
-									BorderThickness="1"
-									HorizontalContentAlignment="Center"
-									VerticalContentAlignment="Center"
-									IsVisible="{Binding QuickLaunchButton2Visible}"
-									ToolTip.Tip="{Binding QuickLaunchButton2Tooltip}"/>
-
-							<Button Name="QuickLaunch3"
-									Content="{Binding QuickLaunchButton3Text}"
-									Click="OnQuickLaunch3"
-									Width="42"
-									Height="28"
-									FontSize="9"
-									FontWeight="Bold"
-									Background="{StaticResource QuickLaunchGradient}"
-									Foreground="White"
-									CornerRadius="3"
-									BorderBrush="#FF9C52"
-									BorderThickness="1"
-									HorizontalContentAlignment="Center"
-									VerticalContentAlignment="Center"
-									IsVisible="{Binding QuickLaunchButton3Visible}"
-									ToolTip.Tip="{Binding QuickLaunchButton3Tooltip}"/>
-
-							<Button Name="QuickLaunch4"
-									Content="{Binding QuickLaunchButton4Text}"
-									Click="OnQuickLaunch4"
-									Width="35"
-									Height="22"
-									FontSize="7"
-									FontWeight="Bold"
-									Background="{StaticResource QuickLaunchGradient}"
-									Foreground="White"
-									CornerRadius="3"
-									BorderBrush="#FF9C52"
-									BorderThickness="1"
-									HorizontalContentAlignment="Center"
-									VerticalContentAlignment="Center"
-									IsVisible="{Binding QuickLaunchButton4Visible}"
-									ToolTip.Tip="{Binding QuickLaunchButton4Tooltip}"/>
-						</StackPanel>
-					</StackPanel>
-
 				</StackPanel>
-			</Border>
-		</Grid>
+			</DockPanel>
+		</Border>
+	</Grid>
 
-			<!-- Apps Panel -->
-			<Border Grid.Column="2"
-					BorderBrush="Gray"
-					BorderThickness="1"
-					CornerRadius="10"
-					Padding="15"
-					IsEnabled="{Binding IsConnected}"
-					IsVisible="{Binding !IsRemoteOnlyMode}">
+		<!-- Apps Panel -->
+		<Border Grid.Column="2"
+				BorderBrush="Gray"
+				BorderThickness="1"
+				CornerRadius="10"
+				Padding="15"
+				IsEnabled="{Binding IsConnected}"
+				IsVisible="{Binding !IsRemoteOnlyMode}">
 				
 				<!-- Single Grid container to hold both views -->
 				<Grid>

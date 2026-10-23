@@ -6,9 +6,17 @@
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
+	<TrayIcon.Icons>
+		<TrayIcons>
+			<TrayIcon Icon="avares://RokuRemoteAvalonia/Assets/roku-remote.ico"
+					  ToolTipText="Roku Remote Control"
+					  Clicked="OnTrayIconClicked"/>
+		</TrayIcons>
+	</TrayIcon.Icons>
+
 	<Application.Styles>
 		<FluentTheme />
 		<dialogHostAvalonia:DialogHostStyles />
 	</Application.Styles>
-	
+
 </Application>

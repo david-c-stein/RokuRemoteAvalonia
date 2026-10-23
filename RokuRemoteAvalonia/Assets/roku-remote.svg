@@ -1,0 +1,26 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"   stop-color="#2B2B35"/>
+      <stop offset="0.5" stop-color="#1E1E28"/>
+      <stop offset="1"   stop-color="#14141C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Remote body -->
+  <rect x="78" y="14" width="100" height="228" rx="26" ry="26"
+        fill="url(#body)" stroke="#3A3A4A" stroke-width="4"/>
+
+  <!-- Power button -->
+  <circle cx="128" cy="46" r="13" fill="#FF4757"/>
+
+  <!-- D-pad ring + OK -->
+  <circle cx="128" cy="116" r="40" fill="none" stroke="#4A4A54" stroke-width="12"/>
+  <circle cx="128" cy="116" r="20" fill="#662D91"/>
+
+  <!-- Lower buttons -->
+  <circle cx="104" cy="178" r="11" fill="#4A4A54"/>
+  <circle cx="152" cy="178" r="11" fill="#4A4A54"/>
+  <circle cx="104" cy="212" r="11" fill="#FF8C42"/>
+  <circle cx="152" cy="212" r="11" fill="#FF8C42"/>
+</svg>

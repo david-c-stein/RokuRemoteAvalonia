@@ -20,5 +20,15 @@ namespace RokuRemoteAvalonia
 
             base.OnFrameworkInitializationCompleted();
         }
+
+        public void OnTrayIconClicked(object? sender, System.EventArgs e)
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } window })
+            {
+                window.Show();
+                window.WindowState = Avalonia.Controls.WindowState.Normal;
+                window.Activate();
+            }
+        }
     }
 }
